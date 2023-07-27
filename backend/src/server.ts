@@ -1,1 +1,3 @@
-console.log('aa');
+//Imports
+import('dotenv/config')
+
