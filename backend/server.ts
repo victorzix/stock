@@ -1,6 +1,16 @@
 //Imports
-import 'dotenv/config';
-import {connection} from './src/database/db'
+import "dotenv/config";
+import { connection } from "./src/database/db";
+import app from "./app";
 
-connection
+const port = process.env.SERVER_PORT || 3000;
 
+try {
+  app.listen(port, () => {
+    console.log("listening on port " + port);
+  });
+} catch (err: any) {
+  console.log("Unable to listen on port" + port, err.message);
+}
+
+connection();
