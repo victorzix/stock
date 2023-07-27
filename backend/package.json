@@ -19,6 +19,7 @@
     "@types/node": "^20.4.5",
     "@types/sequelize": "^4.28.15",
     "dotenv": "^16.3.1",
+    "git-commit-msg-linter": "^5.0.4",
     "sequelize": "^6.32.1",
     "sqlite3": "^5.1.6",
     "ts-node-dev": "^2.0.0",

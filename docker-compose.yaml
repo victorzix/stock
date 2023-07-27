@@ -1,0 +1,11 @@
+version: '3'
+services:
+  db:
+    image: mysql
+    enviroment:
+    MYSQL_ROOT_PASSWORD: 123456
+    MYSQL_DATABASE: stock
+  ports:
+    - "3306:3396"
+  volumes:
+    - ./data:/var/lib/mysql-stock
