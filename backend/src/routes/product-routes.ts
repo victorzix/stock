@@ -6,6 +6,7 @@ const router = Router()
 
 router.post('/store', ProductController.store)
 router.get('/show/:id', ProductController.show)
+router.get('/index', ProductController.index)
 router.put('/update/:id', ProductController.update)
 
 
