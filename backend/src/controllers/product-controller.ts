@@ -5,7 +5,7 @@ import { generateId } from "../utils/random-bytes";
 import { Op, FindOptions } from "sequelize";
 
 class ProductController {
-  async store(req: Request, res: Response): Promise<void | Response> {
+  async store(req: Request, res: Response): Promise<Response> {
     const id = generateId();
     const { name, price, product_type, sector, quantity } = req.body;
 
@@ -42,11 +42,13 @@ class ProductController {
         },
       });
     } catch (err: any) {
-      console.log(err.message);
+      return res.status(400).json({
+				msg: [err.message]
+			})
     }
   }
 
-  async show(req: Request, res: Response): Promise<void | Response> {
+  async show(req: Request, res: Response): Promise<Response> {
     try {
       const product = await Product.findByPk(req.params.id);
 
@@ -56,11 +58,13 @@ class ProductController {
 
       return res.status(200).json({ product: [product] });
     } catch (err: any) {
-      console.log(err.message);
+      return res.status(400).json({
+				msg: [err.message]
+			})
     }
   }
 
-  async update(req: Request, res: Response): Promise<void | Response> {
+  async update(req: Request, res: Response): Promise<Response> {
     try {
       const product = await Product.findByPk(req.params.id);
 
@@ -88,58 +92,67 @@ class ProductController {
         },
       });
     } catch (err: any) {
-      console.log(err.message);
+      return res.status(400).json({
+				msg: [err.message]
+			})
     }
   }
 
-  async index(req: Request, res: Response): Promise<void | Response> {
-    const query: IProductQuery = {
-      name: req.query.name ? `%${req.query.name}%` : "",
-      price: req.query.price ? Number(req.query.price) : undefined,
-      sector: req.query.sector ? `${req.query.sector}` : "",
-    };
-
-    const whereConditions: FindOptions["where"] = {};
-
-    if (query.name) {
-      whereConditions.name = {
-        [Op.like]: query.name,
-      };
-    }
-    if (query.price) {
-      whereConditions.price = {
-        [Op.lte]: query.price,
-      };
-    }
-    if (query.sector) {
-      whereConditions.sector = {
-        [Op.like]: query.sector,
-      };
-    }
-
-    const products = await Product.findAll({
-      where: whereConditions,
-    });
-
-    const listOfProducts = products.map((product: IProduct) => {
-      const { id, name, total_income, quantity, price, sector } = product;
-      return {
-        product: {
-          name,
-          id,
-          total_income,
-          quantity,
-          price,
-          sector,
-        },
-      };
-    });
-
-    return res.status(200).json({
-      products: {
-        listOfProducts: listOfProducts,
-      },
-    });
+  async index(req: Request, res: Response): Promise<Response> {
+		try {
+			const query: IProductQuery = {
+				name: req.query.name ? `%${req.query.name}%` : "",
+				price: req.query.price ? Number(req.query.price) : undefined,
+				sector: req.query.sector ? `${req.query.sector}` : "",
+			};
+	
+			const whereConditions: FindOptions["where"] = {};
+	
+			if (query.name) {
+				whereConditions.name = {
+					[Op.like]: query.name,
+				};
+			}
+			if (query.price) {
+				whereConditions.price = {
+					[Op.lte]: query.price,
+				};
+			}
+			if (query.sector) {
+				whereConditions.sector = {
+					[Op.like]: query.sector,
+				};
+			}
+	
+			const products = await Product.findAll({
+				where: whereConditions,
+			});
+	
+			const listOfProducts = products.map((product: IProduct) => {
+				const { id, name, total_income, quantity, price, sector } = product;
+				return {
+					product: {
+						name,
+						id,
+						total_income,
+						quantity,
+						price,
+						sector,
+					},
+				};
+			});
+	
+			return res.status(200).json({
+				products: {
+					listOfProducts: listOfProducts,
+				},
+			});
+		} catch (err: any) {
+			return res.status(400).json({
+				msg: [err.message]
+			})
+		}
+    
   }
 }
 
