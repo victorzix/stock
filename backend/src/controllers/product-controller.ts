@@ -59,12 +59,12 @@ class ProductController {
 			return res.status(400).json({ msg: ['Product not found'] });
 		}
 
+
 		const productEdited = await product.update(req.body);
 		const { name, price, product_type, sector, quantity } = productEdited;
-    
-		await product.update({
-			total_income: (productEdited.total_income = price * Number(quantity)),
-		});
+    const total_income = price * Number(quantity);
+
+    product.set({total_income: total_income}).save()
 
 		return res.status(200).json({
 			msg: ['Updated successfully'],
@@ -73,6 +73,8 @@ class ProductController {
 				price: price,
 				product_type: product_type,
 				sector: sector,
+        quantity: quantity,
+        total_income: total_income
 			},
 		});
 	}
