@@ -3,8 +3,8 @@ import {
   Optional
 } from "sequelize";
 
-interface IProduct {
-  id: {};
+export interface IProduct {
+  id: string[];
   name: string;
   price: number;
   product_type: string | undefined;
@@ -15,7 +15,7 @@ interface IProduct {
 interface IProductCreation extends Optional<IProduct, 'id'> {}
 
 export class ProductInstance extends Model<IProduct, IProductCreation>{
-  declare id: string;
+  declare id: string[];
   declare name: string;
   declare price: number;
   declare product_type: string | undefined;
