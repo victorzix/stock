@@ -10,7 +10,7 @@ export interface IProduct {
   product_type: string | undefined;
   sector: string;
   quantity?: number | undefined;
-  total?: number;
+  total_income?: number;
 };
 
 interface IProductCreation extends Optional<IProduct, 'quantity'> {}
@@ -22,4 +22,5 @@ export class ProductInstance extends Model<IProduct, IProductCreation>{
   declare product_type: string | undefined;
   declare sector: string;
   declare quantity?: number | undefined;
+  declare total_income?: number | undefined;
 }
