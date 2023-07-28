@@ -29,7 +29,7 @@ export const Product = sequelize.define<ProductInstance>('Product', {
 		type: DataTypes.INTEGER,
     allowNull: false,
 	},
-  total: {
+  total_income: {
     type: DataTypes.FLOAT,
   }
 });
