@@ -1,7 +1,8 @@
-import { IProduct } from "../@types/IProduct";
+import { IProduct, IProductQuery, ProductInstance } from "../@types/IProduct";
 import { Product } from "../models/Product";
 import { Request, Response } from "express";
 import { generateId } from "../utils/random-bytes";
+import { Op, FindOptions } from "sequelize";
 
 class ProductController {
   async store(req: Request, res: Response): Promise<void | Response> {
@@ -9,12 +10,12 @@ class ProductController {
     const { name, price, product_type, sector, quantity } = req.body;
 
     const productData: IProduct = {
-      id: id,
-      name: name,
-      price: price,
-      product_type: product_type,
-      sector: sector,
-      quantity: quantity,
+      id,
+      name,
+      price,
+      product_type,
+      sector,
+      quantity,
       total_income: Number(quantity) * Number(price),
     };
 
@@ -46,58 +47,94 @@ class ProductController {
   }
 
   async show(req: Request, res: Response): Promise<void | Response> {
-    const product = await Product.findByPk(req.params.id);
+    try {
+      const product = await Product.findByPk(req.params.id);
 
-    if (!product) {
-      return res.status(400).json({ msg: ["Product not found"] });
+      if (!product) {
+        return res.status(400).json({ msg: ["Product not found"] });
+      }
+
+      return res.status(200).json({ product: [product] });
+    } catch (err: any) {
+      console.log(err.message);
     }
-
-    return res.status(200).json({ product: [product] });
   }
 
   async update(req: Request, res: Response): Promise<void | Response> {
-    const product = await Product.findByPk(req.params.id);
+    try {
+      const product = await Product.findByPk(req.params.id);
 
-    if (!product) {
-      return res.status(400).json({ msg: ["Product not found"] });
+      if (!product) {
+        return res.status(400).json({ msg: ["Product not found"] });
+      }
+
+      const priceCalc: number = req.body.price || product.price;
+      const quantityCalc: number = req.body.quantity || product.quantity;
+
+      const total_income: number = priceCalc * quantityCalc;
+
+      const productEdited = await product.update({ ...req.body, total_income });
+      const { name, price, product_type, sector, quantity } = productEdited;
+
+      return res.status(200).json({
+        msg: ["Updated successfully"],
+        product: {
+          name,
+          price,
+          product_type,
+          sector,
+          quantity,
+          total_income,
+        },
+      });
+    } catch (err: any) {
+      console.log(err.message);
     }
-
-    const priceCalc: number = req.body.price || product.price;
-    const quantityCalc: number = req.body.quantity || product.quantity;
-
-    const total_income: number = priceCalc * quantityCalc;
-
-    const productEdited = await product.update({ ...req.body, total_income });
-    const { name, price, product_type, sector, quantity } = productEdited;
-
-    return res.status(200).json({
-      msg: ["Updated successfully"],
-      product: {
-        name: name,
-        price: price,
-        product_type: product_type,
-        sector: sector,
-        quantity: quantity,
-        total_income: total_income,
-      },
-    });
   }
 
   async index(req: Request, res: Response): Promise<void | Response> {
-    const products = await Product.findAll();
+    const query: IProductQuery = {
+      name: req.query.name ? `%${req.query.name}%` : "",
+      price: req.query.price ? Number(req.query.price) : undefined,
+      sector: req.query.sector ? `${req.query.sector}` : "",
+    };
+
+    const whereConditions: FindOptions["where"] = {};
+
+    if (query.name) {
+      whereConditions.name = {
+        [Op.like]: query.name,
+      };
+    }
+    if (query.price) {
+      whereConditions.price = {
+        [Op.lte]: query.price,
+      };
+    }
+    if (query.sector) {
+      whereConditions.sector = {
+        [Op.like]: query.sector,
+      };
+    }
+
+    const products = await Product.findAll({
+      where: whereConditions,
+    });
+
     const listOfProducts = products.map((product: IProduct) => {
       const { id, name, total_income, quantity, price, sector } = product;
       return {
         product: {
-          name: name,
-          id: id,
-          total_income: total_income,
-          quantity: quantity,
-          price: price,
-          sector: sector,
+          name,
+          id,
+          total_income,
+          quantity,
+          price,
+          sector,
         },
       };
     });
+
     return res.status(200).json({
       products: {
         listOfProducts: listOfProducts,
