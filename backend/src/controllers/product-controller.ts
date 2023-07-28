@@ -29,6 +29,9 @@ class ProductController {
 			const product = await Product.create(productData);
 
 			return res.status(201).json({
+				msg: ['Successfuly added']
+				,
+				product: {
 				product_id: id,
 				name: name,
 				price: price,
@@ -36,6 +39,7 @@ class ProductController {
 				sector: sector,
 				quantity: quantity,
 				total_income: productData.total_income,
+				}
 			});
 		} catch (err: any) {
 			console.log(err.message);
@@ -59,12 +63,13 @@ class ProductController {
 			return res.status(400).json({ msg: ['Product not found'] });
 		}
 
+		const priceCalc: number = req.body.price || product.price;
+		const quantityCalc: number = req.body.quantity || product.quantity
 
-		const productEdited = await product.update(req.body);
+		const total_income: number = priceCalc * quantityCalc
+		
+		const productEdited = await product.update({...req.body, total_income});
 		const { name, price, product_type, sector, quantity } = productEdited;
-    const total_income = price * Number(quantity);
-
-    product.set({total_income: total_income}).save()
 
 		return res.status(200).json({
 			msg: ['Updated successfully'],
