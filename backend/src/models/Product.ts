@@ -22,11 +22,14 @@ export const Product = sequelize.define<ProductInstance>('Product', {
     allowNull: false,
 	},
 	sector: {
-		type: DataTypes.INTEGER,
+		type: DataTypes.STRING,
     allowNull: false,
 	},
 	quantity: {
 		type: DataTypes.INTEGER,
     allowNull: false,
 	},
+  total: {
+    type: DataTypes.FLOAT,
+  }
 });
