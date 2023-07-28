@@ -1,0 +1,12 @@
+Cadastro de produtos
+Listagem
+Edição/remoção
+Controle de estoque
+Dados dos produtos
+Fornecedores
+Dados dos fornecedores
+
+Cadastro de Setores
+Listagem
+Edição (limitada)
+Valores totais projetados

@@ -2,6 +2,7 @@ import {
   Model,
   Optional
 } from "sequelize";
+
 interface IProduct {
   id: {};
   name: string;
