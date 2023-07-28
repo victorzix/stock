@@ -2,7 +2,7 @@
 import "dotenv/config";
 import { connection } from "./database/db";
 import app from "./app";
-
+import {Product} from './models/Product'
 const port = process.env.SERVER_PORT || 3000;
 
 try {
