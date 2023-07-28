@@ -2,9 +2,6 @@ import { DataTypes } from 'sequelize';
 import { sequelize } from '../database/db';
 import { ProductInstance } from '../@types/IProduct';
 
-// const randomId: string[] = uuidv4().split('-');
-// import { v4 as uuidv4 } from 'uuid';
-
 
 export const Product = sequelize.define<ProductInstance>('Product', {
 	id: {
