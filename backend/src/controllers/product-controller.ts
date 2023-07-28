@@ -15,7 +15,7 @@ class ProductController {
 			product_type: product_type,
 			sector: sector,
 			quantity: quantity,
-			total: Number(quantity) * Number(price),
+			total_income: Number(quantity) * Number(price),
 		};
 
 		try {
@@ -31,17 +31,51 @@ class ProductController {
 			return res.status(201).json({
 				product_id: id,
 				name: name,
-				price: `${price}R$`,
+				price: price,
 				product_type: product_type,
 				sector: sector,
 				quantity: quantity,
-				total: `${productData.total}R$`,
+				total_income: productData.total_income,
 			});
 		} catch (err: any) {
 			console.log(err.message);
 		}
 	}
 
+	async show(req: Request, res: Response): Promise<void | Response> {
+		const product = await Product.findByPk(req.params.id);
+
+		if (!product) {
+			return res.status(400).json({ msg: ['Product not found'] });
+		}
+
+		return res.status(200).json({ product: [product] });
+	}
+
+	async update(req: Request, res: Response): Promise<void | Response> {
+		const product = await Product.findByPk(req.params.id);
+
+		if (!product) {
+			return res.status(400).json({ msg: ['Product not found'] });
+		}
+
+		const productEdited = await product.update(req.body);
+		const { name, price, product_type, sector, quantity } = productEdited;
+    
+		await product.update({
+			total_income: (productEdited.total_income = price * Number(quantity)),
+		});
+
+		return res.status(200).json({
+			msg: ['Updated successfully'],
+			product: {
+				name: name,
+				price: price,
+				product_type: product_type,
+				sector: sector,
+			},
+		});
+	}
 }
 
 export default new ProductController();
