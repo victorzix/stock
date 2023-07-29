@@ -43,8 +43,8 @@ class ProductController {
       });
     } catch (err: any) {
       return res.status(400).json({
-				msg: [err.message]
-			})
+        msg: [err.message],
+      });
     }
   }
 
@@ -59,8 +59,8 @@ class ProductController {
       return res.status(200).json({ product: [product] });
     } catch (err: any) {
       return res.status(400).json({
-				msg: [err.message]
-			})
+        msg: [err.message],
+      });
     }
   }
 
@@ -93,66 +93,85 @@ class ProductController {
       });
     } catch (err: any) {
       return res.status(400).json({
-				msg: [err.message]
-			})
+        msg: [err.message],
+      });
     }
   }
 
   async index(req: Request, res: Response): Promise<Response> {
-		try {
-			const query: IProductQuery = {
-				name: req.query.name ? `%${req.query.name}%` : "",
-				price: req.query.price ? Number(req.query.price) : undefined,
-				sector: req.query.sector ? `${req.query.sector}` : "",
-			};
-	
-			const whereConditions: FindOptions["where"] = {};
-	
-			if (query.name) {
-				whereConditions.name = {
-					[Op.like]: query.name,
-				};
-			}
-			if (query.price) {
-				whereConditions.price = {
-					[Op.lte]: query.price,
-				};
-			}
-			if (query.sector) {
-				whereConditions.sector = {
-					[Op.like]: query.sector,
-				};
-			}
-	
-			const products = await Product.findAll({
-				where: whereConditions,
-			});
-	
-			const listOfProducts = products.map((product: IProduct) => {
-				const { id, name, total_income, quantity, price, sector } = product;
-				return {
-					product: {
-						name,
-						id,
-						total_income,
-						quantity,
-						price,
-						sector,
-					},
-				};
-			});
-	
-			return res.status(200).json({
-				products: {
-					listOfProducts: listOfProducts,
-				},
-			});
-		} catch (err: any) {
-			return res.status(400).json({
-				msg: [err.message]
-			})
-		}
-    
+    try {
+      const query: IProductQuery = {
+        name: req.query.name ? `%${req.query.name}%` : "",
+        price: req.query.price ? Number(req.query.price) : undefined,
+        sector: req.query.sector ? `${req.query.sector}` : "",
+      };
+
+      const whereConditions: FindOptions["where"] = {};
+
+      if (query.name) {
+        whereConditions.name = {
+          [Op.like]: query.name,
+        };
+      }
+      if (query.price) {
+        whereConditions.price = {
+          [Op.lte]: query.price,
+        };
+      }
+      if (query.sector) {
+        whereConditions.sector = {
+          [Op.like]: query.sector,
+        };
+      }
+
+      const products = await Product.findAll({
+        where: whereConditions,
+      });
+
+      const listOfProducts = products.map((product: IProduct) => {
+        const { id, name, total_income, quantity, price, sector } = product;
+        return {
+          product: {
+            name,
+            id,
+            total_income,
+            quantity,
+            price,
+            sector,
+          },
+        };
+      });
+
+      return res.status(200).json({
+        products: {
+          listOfProducts: listOfProducts,
+        },
+      });
+    } catch (err: any) {
+      return res.status(400).json({
+        msg: [err.message],
+      });
+    }
+  }
+
+  async delete(req: Request, res: Response): Promise<Response> {
+    try {
+      const product = await Product.findByPk(req.params.id);
+
+      if (!product) {
+        return res.status(400).json({ msg: ["Product not found"] });
+      }
+
+      await product.destroy();
+
+      return res.status(204).json({
+        msg: ["Successfully deleted"],
+      });
+    } catch (err: any) {
+      return res.status(400).json({
+        msg: [err.message],
+      });
+    }
   }
 }
 
