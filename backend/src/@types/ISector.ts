@@ -4,7 +4,7 @@ import {
 } from "sequelize";
 
 export interface ISector {
-  id: string;
+  id: number;
   name: string;
   type: string
   income?: number;
@@ -19,7 +19,7 @@ export interface ISectorQuery {
 interface ISectorCreation extends Optional<ISector, 'income'> {}
 
 export class SectorInstance extends Model<ISector, ISectorCreation>{
-  declare id: string;
+  declare id: number;
   declare name: string;
   declare type: string | undefined;
   declare income?: number | undefined;
