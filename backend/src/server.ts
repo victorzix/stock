@@ -3,6 +3,7 @@ import 'dotenv/config';
 import { connection } from './database/db';
 import app from './app';
 import { Product } from './models/Product';
+import { Sector } from './models/Sector';
 const port = process.env.SERVER_PORT || 3000;
 
 try {
