@@ -173,6 +173,31 @@ class ProductController {
       });
     }
   }
+
+  async getIncomes(req: Request, res: Response): Promise<Response> {
+    try {
+      const sector = {sector: req.query.sector? Number(req.query.sector) : undefined}
+
+      const products: ProductInstance[] = await Product.findAll({
+        where: sector,
+      });
+
+      const income = products.reduce(
+        (acumulator: number, prod: ProductInstance) => {
+          return acumulator + Number(prod.total_income);
+        },
+        0
+      );
+
+      return res.status(200).json({
+        income
+      });
+    } catch (err: any) {
+      return res.status(404).json({
+        msg: [err.message],
+      });
+    }
+  }
 }
 
 export default new ProductController();
