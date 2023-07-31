@@ -11,9 +11,5 @@ app.use(express.json());
 
 // app Routes
 app.use(router);
-// app Configurations
-app.get("/", (req: Request, res: Response) => {
-  res.send("Hello World");
-});
 
 export default app;
