@@ -143,9 +143,7 @@ class ProductController {
       });
 
       return res.status(200).json({
-        products: {
-          listOfProducts: listOfProducts,
-        },
+        products: listOfProducts
       });
     } catch (err: any) {
       return res.status(400).json({
