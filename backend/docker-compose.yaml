@@ -1,0 +1,11 @@
+version: '3'
+services:
+  db:
+    image: mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: '123456'
+      MYSQL_DATABASE: 'stock'
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./docker/data:/var/lib/mysql-stock
