@@ -7,13 +7,12 @@ import { Op, FindOptions } from 'sequelize';
 class ProductController {
 	async store(req: Request, res: Response): Promise<Response> {
 		const id = generateId();
-		const { name, price, product_type, sector, quantity } = req.body;
+		const { name, price, sector, quantity } = req.body;
 
 		const productData: IProduct = {
 			id,
 			name,
 			price,
-			product_type,
 			sector,
 			quantity,
 			total_income: Number(quantity) * Number(price),
@@ -35,7 +34,6 @@ class ProductController {
 					product_id: id,
 					name: name,
 					price: price,
-					product_type: product_type,
 					sector: sector,
 					quantity: quantity,
 					total_income: productData.total_income,
@@ -78,11 +76,10 @@ class ProductController {
 			const total_income: number = priceCalc * quantityCalc;
 
 			const productEdited = await product.update({ ...req.body, total_income });
-			const { name, price, product_type, sector, quantity } = productEdited;
+			const { name, price, sector, quantity } = productEdited;
 			const newProduct = {
 				name,
 				price,
-				product_type,
 				sector,
 				quantity,
 				total_income,

@@ -17,10 +17,6 @@ export const Product = sequelize.define<ProductInstance>('Product', {
 		type: DataTypes.FLOAT,
 		defaultValue: '00.00',
 	},
-	product_type: {
-		type: DataTypes.STRING,
-    allowNull: false,
-	},
 	sector: {
 		type: DataTypes.STRING,
     allowNull: false,
