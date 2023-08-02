@@ -3,12 +3,19 @@ import { Product } from '../models/Product';
 import { Request, Response } from 'express';
 import { generateId } from '../utils/random-bytes';
 import { Op, FindOptions } from 'sequelize';
+import { validateProducts } from '../utils/validators';
 
 class ProductController {
 	async store(req: Request, res: Response): Promise<Response> {
 		const id = generateId();
 		const { name, price, sector, quantity } = req.body;
 
+		const valid = validateProducts(req.body)
+		if(valid.error) {
+			return res.status(400).json({
+				msg: ["Product isn't valid"]
+			})
+		}
 		const productData: IProduct = {
 			id,
 			name,
@@ -65,7 +72,6 @@ class ProductController {
 	async update(req: Request, res: Response): Promise<Response> {
 		try {
 			const product = await Product.findByPk(req.params.id);
-
 			if (!product) {
 				return res.status(400).json({ msg: ['Product not found'] });
 			}
