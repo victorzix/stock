@@ -1,12 +1,17 @@
 const productsList = document.querySelector("#table_body");
 const registerForm = document.getElementById("product_register");
+const message = document.getElementById("messages");
+const inputs = document.querySelectorAll("#inputs");
 
 const url = "http://localhost:3000/products";
 
 async function getResponse() {
   const res = await fetch(url);
   const response = await res.json();
-
+  setInterval(() => {
+    message.textContent = "";
+    message.classList.remove(...message.classList);
+  }, 6000);
   productsList.innerHTML = "";
 
   response.map((product) => {
@@ -21,7 +26,6 @@ async function getResponse() {
     `;
   });
 }
-
 document.getElementById("addProd").addEventListener("click", () => {
   registerForm.style.display = "block";
 });
@@ -35,12 +39,30 @@ async function postData(data) {
       "Content-Type": "application/json",
     },
   });
-  return res.json();
+  const response = await res.json();
+  
+  inputs.forEach((element) => {
+    if (element.value.length < 1) {
+      return (
+        (message.textContent = response.msg),
+        message.classList.add("text-danger")
+      );
+    } else if (res.status != 201)
+      return (
+        (message.textContent = response.msg),
+        message.classList.add("text-danger")
+      );
+    else {
+      return (
+        (message.textContent = response.msg),
+        message.classList.add("text-success")
+      );
+    }
+  });
 }
 
 registerForm.addEventListener("submit", async (e) => {
   e.preventDefault();
-  const inputs = document.querySelectorAll('#inputs')
   const name = document.querySelector('[name="name"]').value;
   const quantity = document.querySelector('[name="quantity"]').value;
   const price = document.querySelector('[name="price"]').value;
@@ -53,10 +75,9 @@ registerForm.addEventListener("submit", async (e) => {
     sector,
   };
 
-  
   await postData(data);
-  inputs.forEach(element => {
-    element.value = ''
+  inputs.forEach((element) => {
+    element.value = "";
   });
   getResponse();
 });
