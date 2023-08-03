@@ -3,7 +3,12 @@ import { Product } from '../models/Product';
 import { Request, Response } from 'express';
 import { generateId } from '../utils/random-bytes';
 import { Op, FindOptions } from 'sequelize';
-import { productSchema, IValidProduct } from '../utils/validators';
+import {
+	updateProductSchema,
+	createProductSchema,
+	IValidProduct,
+	IValidUpdate,
+} from '../utils/validators';
 
 class ProductController {
 	async store(req: Request, res: Response): Promise<Response> {
@@ -24,8 +29,9 @@ class ProductController {
 				return res.status(400).json(`${name} has already been registered`);
 			}
 
-			const validProduct: IValidProduct = await productSchema.validate(
-				productData
+			const validProduct: IValidProduct = await createProductSchema.validate(
+				productData,
+				{ strict: true }
 			);
 
 			const product = await Product.create(validProduct);
@@ -70,18 +76,23 @@ class ProductController {
 
 			const total_income: number = priceCalc * quantityCalc;
 
-			const productEdited = await product.update({ ...req.body, total_income });
+			const validProduct: IValidUpdate = await updateProductSchema.validate(
+				req.body,
+				{ strict: true }
+			);
+			const productEdited = await product.update({
+				...validProduct,
+				total_income,
+			});
 			const { name, price, sector, quantity } = productEdited;
-			const newProduct = {
+
+			return res.status(200).json({
+				message: 'Updated successfully',
 				name,
 				price,
 				sector,
 				quantity,
 				total_income,
-			};
-			return res.status(200).json({
-				message: 'Updated successfully',
-				newProduct,
 			});
 		} catch (err: any) {
 			return res.status(400).json(err.message);
