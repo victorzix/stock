@@ -20,8 +20,8 @@ async function getResponse() {
     <td class="p-3">${product.sector}</td>
     <td class="p-3">${product.name}</td>
     <td class="p-3">${product.quantity}</td>
-    <td class="p-3">${product.price}</td>
-    <td class="p-3">${product.total_income}</td>
+    <td class="p-3">R$ ${product.price}</td>
+    <td class="p-3">R$ ${product.total_income}</td>
     <td><button class="btn btn-dark btn-sm m-1" id="removeBtn" onclick="deleteProduct(this)" data-id="${product.id}">Remover</button></td>
     `;
   });
