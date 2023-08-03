@@ -3,19 +3,12 @@ import { Product } from '../models/Product';
 import { Request, Response } from 'express';
 import { generateId } from '../utils/random-bytes';
 import { Op, FindOptions } from 'sequelize';
-import { validateProducts } from '../utils/validators';
+import { productSchema, IValidProduct } from '../utils/validators';
 
 class ProductController {
 	async store(req: Request, res: Response): Promise<Response> {
 		const id = generateId();
 		const { name, price, sector, quantity } = req.body;
-
-		const valid = validateProducts(req.body)
-		if(valid.error) {
-			return res.status(400).json({
-				msg: ["Product isn't valid"]
-			})
-		}
 		const productData: IProduct = {
 			id,
 			name,
@@ -26,30 +19,28 @@ class ProductController {
 		};
 
 		try {
-			const productCheck = await Product.findAll({ where: { name: name } });
-			if (productCheck.length > 0) {
-				return res
-					.status(400)
-					.json({ msg: [`${name} has already been registered`] });
+			const productCheck = await Product.findOne({ where: { name: name } });
+			if (productCheck) {
+				return res.status(400).json(`${name} has already been registered`);
 			}
 
-			const product = await Product.create(productData);
+			const validProduct: IValidProduct = await productSchema.validate(
+				productData
+			);
+
+			const product = await Product.create(validProduct);
 
 			return res.status(201).json({
-				msg: ['Successfuly added'],
-				product: {
-					product_id: id,
-					name: name,
-					price: price,
-					sector: sector,
-					quantity: quantity,
-					total_income: productData.total_income,
-				},
+				message: 'Successfully created product',
+				id,
+				name,
+				price,
+				sector,
+				quantity,
+				total_income: productData.total_income,
 			});
 		} catch (err: any) {
-			return res.status(400).json({
-				msg: [err.message],
-			});
+			return res.status(400).json(err.message);
 		}
 	}
 
@@ -58,14 +49,12 @@ class ProductController {
 			const product = await Product.findByPk(req.params.id);
 
 			if (!product) {
-				return res.status(400).json({ msg: ['Product not found'] });
+				return res.status(400).json('Product not found');
 			}
 
 			return res.status(200).json(product);
 		} catch (err: any) {
-			return res.status(400).json({
-				msg: [err.message],
-			});
+			return res.status(400).json(err.message);
 		}
 	}
 
@@ -73,7 +62,7 @@ class ProductController {
 		try {
 			const product = await Product.findByPk(req.params.id);
 			if (!product) {
-				return res.status(400).json({ msg: ['Product not found'] });
+				return res.status(400).json('Product not found');
 			}
 
 			const priceCalc: number = req.body.price || product.price;
@@ -91,13 +80,11 @@ class ProductController {
 				total_income,
 			};
 			return res.status(200).json({
-				msg: ['Updated successfully'],
+				message: 'Updated successfully',
 				newProduct,
 			});
 		} catch (err: any) {
-			return res.status(400).json({
-				msg: [err.message],
-			});
+			return res.status(400).json(err.message);
 		}
 	}
 
@@ -145,9 +132,7 @@ class ProductController {
 
 			return res.status(200).json(listOfProducts);
 		} catch (err: any) {
-			return res.status(400).json({
-				msg: [err.message],
-			});
+			return res.status(400).json(err.message);
 		}
 	}
 
@@ -156,18 +141,14 @@ class ProductController {
 			const product = await Product.findByPk(req.params.id);
 
 			if (!product) {
-				return res.status(400).json({ msg: ['Product not found'] });
+				return res.status(400).json('Product not found');
 			}
 
 			await product.destroy();
 
-			return res.status(204).json({
-				msg: ['Successfully deleted'],
-			});
+			return res.status(204).json('Successfully deleted');
 		} catch (err: any) {
-			return res.status(400).json({
-				msg: [err.message],
-			});
+			return res.status(400).json(err.message);
 		}
 	}
 
@@ -188,13 +169,9 @@ class ProductController {
 				0
 			);
 
-			return res.status(200).json(
-				income,
-			);
+			return res.status(200).json(income);
 		} catch (err: any) {
-			return res.status(404).json({
-				msg: [err.message],
-			});
+			return res.status(404).json(err.message);
 		}
 	}
 }
