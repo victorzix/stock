@@ -6,12 +6,12 @@ export async function errorHandler(
 	error: Error,
 	req: Request,
 	res: Response,
-	net: NextFunction
+	next: NextFunction
 ) {
 	if (error instanceof AppError) {
-		return res.status(error.statusCode).json(error.message);
+	 console.log(error.message)
+	 next(error)
 	}
-
 	return res
 		.status(EStatusCode.INTERNAL_SERVER_ERROR)
 		.json('Something wen wrong. Please try again');

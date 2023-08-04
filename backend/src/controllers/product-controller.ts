@@ -50,7 +50,7 @@ class ProductController {
       const product = await Product.findByPk(req.params.id);
 
       if (!product) {
-        throw new NotFoundError("Product not found")
+       throw new NotFoundError("Product not found")
 			}
       return res.status(200).json(product);
   }
