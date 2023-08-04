@@ -9,6 +9,7 @@ import {
   IValidProduct,
   IValidUpdate,
 } from "../utils/validators";
+import { NotFoundError } from "../errors/NotFoundError";
 
 class ProductController {
   async store(req: Request, res: Response): Promise<Response> {
@@ -46,19 +47,15 @@ class ProductController {
   }
 
   async show(req: Request, res: Response): Promise<Response> {
-    try {
       const product = await Product.findByPk(req.params.id);
 
       if (!product) {
-        return res.status(400).json("Product not found");
-      }
-
+        throw new NotFoundError("Product not found")
+			}
       return res.status(200).json(product);
-    } catch (err: any) {
-      return res.status(400).json(err.message);
-    }
   }
 
+	
   async update(req: Request, res: Response): Promise<Response> {
     try {
       const product = await Product.findByPk(req.params.id);
