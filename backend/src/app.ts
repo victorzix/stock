@@ -11,8 +11,7 @@ const app = express();
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(cors())
-app.use(errorHandler)
-// app Routes
 app.use(router);
+app.use(errorHandler)
 
 export default app;

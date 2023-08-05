@@ -1,10 +1,8 @@
 import { Request, Response, Router } from 'express'
 import ProductController from '../controllers/product-controller'
-import { errorHandler } from '../middlewares/errorHandler'
 
 
 const productRouter = Router()
-
 productRouter.post('/', ProductController.store)
 productRouter.patch('/:id', ProductController.update)
 productRouter.delete('/:id', ProductController.delete)

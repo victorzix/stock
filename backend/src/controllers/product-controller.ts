@@ -1,6 +1,6 @@
 import { IProduct, IProductQuery, ProductInstance } from "../@types/IProduct";
 import { Product } from "../models/Product";
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import { generateId } from "../utils/random-bytes";
 import { Op, FindOptions } from "sequelize";
 import {
@@ -10,6 +10,7 @@ import {
   IValidUpdate,
 } from "../utils/validators";
 import { NotFoundError } from "../errors/NotFoundError";
+import { BadRequestError } from "../errors/BadRequestError";
 
 class ProductController {
   async store(req: Request, res: Response): Promise<Response> {
@@ -46,21 +47,30 @@ class ProductController {
     }
   }
 
-  async show(req: Request, res: Response): Promise<Response> {
-      const product = await Product.findByPk(req.params.id);
+  async show(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<Response | void> {
+    const product = await Product.findByPk(req.params.id);
 
-      if (!product) {
-       throw new NotFoundError("Product not found")
-			}
-      return res.status(200).json(product);
+    if (!product) {
+      next(new NotFoundError("Product not found"));
+      return;
+    }
+    return res.status(200).json(product);
   }
 
-	
-  async update(req: Request, res: Response): Promise<Response> {
+  async update(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<Response | void> {
     try {
       const product = await Product.findByPk(req.params.id);
       if (!product) {
-        return res.status(400).json("Product not found");
+        next(new NotFoundError("Product not found"));
+        return;
       }
 
       const priceCalc: number = req.body.price || product.price;
@@ -82,11 +92,11 @@ class ProductController {
         productEdited,
       });
     } catch (err: any) {
-      return res.status(400).json(err.message);
+      return next(new BadRequestError(err.message))
     }
   }
 
-  async index(req: Request, res: Response): Promise<Response> {
+  async index(req: Request, res: Response, next: NextFunction): Promise<Response | void> {
     try {
       const query: IProductQuery = {
         name: req.query.name ? `%${req.query.name}%` : "",
@@ -122,11 +132,11 @@ class ProductController {
 
       return res.status(200).json(listOfProducts);
     } catch (err: any) {
-      return res.status(400).json(err.message);
+      return next(new BadRequestError(err.message))
     }
   }
 
-  async delete(req: Request, res: Response): Promise<Response> {
+  async delete(req: Request, res: Response, next: NextFunction): Promise<Response | void> {
     try {
       const product = await Product.findByPk(req.params.id);
 
@@ -138,11 +148,11 @@ class ProductController {
 
       return res.status(204).json("Successfully deleted");
     } catch (err: any) {
-      return res.status(400).json(err.message);
+      return next(new BadRequestError(err.message))
     }
   }
 
-  async getIncomes(req: Request, res: Response): Promise<Response> {
+  async getIncomes(req: Request, res: Response, next: NextFunction): Promise<Response | void> {
     try {
       const sector = {
         sector: req.query.sector ? Number(req.query.sector) : undefined,
@@ -161,7 +171,7 @@ class ProductController {
 
       return res.status(200).json(income);
     } catch (err: any) {
-      return res.status(404).json(err.message);
+      return next(new NotFoundError(err.message))
     }
   }
 }
