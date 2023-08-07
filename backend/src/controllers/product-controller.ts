@@ -142,7 +142,8 @@ class ProductController {
 
       return res.status(200).json(listOfProducts);
     } catch (err: any) {
-      return next(new BadRequestError(err.message));
+      next(new BadRequestError(err.message));
+      return
     }
   }
 
@@ -163,7 +164,8 @@ class ProductController {
 
       return res.status(204).json("Successfully deleted");
     } catch (err: any) {
-      return next(new BadRequestError(err.message));
+      next(new BadRequestError(err.message));
+      return 
     }
   }
 
@@ -199,7 +201,8 @@ class ProductController {
 
       return res.status(200).json(income);
     } catch (err: any) {
-      return next(new BadRequestError(err.message));
+      next(new BadRequestError(err.message));
+      return 
     }
   }
 }
