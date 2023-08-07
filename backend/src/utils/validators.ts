@@ -34,7 +34,6 @@ export const createProductSchema: ObjectSchema<IValidProduct> = object({
 });
 
 export const updateProductSchema: ObjectSchema<IValidUpdate> = object({
-	id: string(),
 	name: string().min(1).max(60),
 	quantity: number().min(1).max(5000),
 	price: number().min(1).max(10000),
