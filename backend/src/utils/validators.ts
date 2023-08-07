@@ -10,13 +10,7 @@ export interface IValidProduct {
 	sector: string;
 }
 
-export interface IValidUpdate {
-	id?: string;
-	name?: string;
-	quantity?: number;
-	price?: number;
-	sector?: string;
-}
+export interface IValidUpdate extends Partial<Omit<IValidProduct, "id">> {}
 
 setLocale({
 	mixed: {
