@@ -4,10 +4,11 @@ import { NextFunction, query, Request, Response } from "express";
 import { generateId } from "../utils/random-bytes";
 import { Op, FindOptions } from "sequelize";
 import {
-  updateProductSchema,
   createProductSchema,
+  isValid,
   IValidProduct,
   IValidUpdate,
+  updateProductSchema,
 } from "../utils/validators";
 import { NotFoundError } from "../errors/NotFoundError";
 import { BadRequestError } from "../errors/BadRequestError";
@@ -35,11 +36,8 @@ class ProductController {
       return;
     }
 
-    const validProduct: IValidProduct = await createProductSchema.validate(
-      productData,
-      { strict: true }
-    );
-
+    const validProduct: IProduct = await isValid(createProductSchema, productData)
+    
     const product = await Product.create(validProduct);
 
     return res.status(201).json({
@@ -143,7 +141,7 @@ class ProductController {
       return res.status(200).json(listOfProducts);
     } catch (err: any) {
       next(new BadRequestError(err.message));
-      return
+      return;
     }
   }
 
@@ -165,7 +163,7 @@ class ProductController {
       return res.status(204).json("Successfully deleted");
     } catch (err: any) {
       next(new BadRequestError(err.message));
-      return 
+      return;
     }
   }
 
@@ -202,7 +200,7 @@ class ProductController {
       return res.status(200).json(income);
     } catch (err: any) {
       next(new BadRequestError(err.message));
-      return 
+      return;
     }
   }
 }
