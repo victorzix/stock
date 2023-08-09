@@ -40,6 +40,7 @@ async function postData(data) {
     },
   });
   const response = await res.json();
+  console.log(response)
   
   inputs.forEach((element) => {
     if (element.value.length < 1) {
@@ -76,9 +77,6 @@ registerForm.addEventListener("submit", async (e) => {
   };
 
   await postData(data);
-  inputs.forEach((element) => {
-    element.value = "";
-  });
   getResponse();
 });
 
