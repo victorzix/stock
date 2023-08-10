@@ -1,15 +1,13 @@
 import { IProduct, IProductQuery, ProductInstance } from '../@types/IProduct';
 import { Product } from '../models/Product';
-import { NextFunction, query, Request, Response } from 'express';
-import { generateId } from '../utils/random-bytes';
+import { NextFunction, Request, Response } from 'express';
 import { Op, FindOptions } from 'sequelize';
 import {
-	createProductSchema,
-	IValidProduct,
 	IValidUpdate,
 	updateProductSchema,
 	validateData,
 } from '../utils/validators';
+import StoreProductService from '../services/store-product-service'; './store-product-service'
 import { NotFoundError } from '../errors/NotFoundError';
 import { BadRequestError } from '../errors/BadRequestError';
 
@@ -19,35 +17,17 @@ class ProductController {
 		res: Response,
 		next: NextFunction
 	): Promise<Response | void> {
-		const id = generateId();
-		const { name, price, sector, quantity } = req.body;
-		const productData: IProduct = {
-			id,
-			name,
-			price,
-			sector,
-			quantity,
-			total_income: Number(quantity) * Number(price),
-		};
+		try {
+			const data: IProduct = req.body;
+			const product: ProductInstance = await StoreProductService.storeProduct(data)
 
-		const productCheck = await Product.findOne({ where: { name: name } });
-		if (productCheck) {
-			next(new BadRequestError('Product already exists'));
-			return;
+			return res.status(201).json({
+				message: "Product successfully created",
+				data: product
+			})
+		} catch(err) {
+			return next(err);
 		}
-
-		const validation = await validateData<IProduct>(createProductSchema, productData)
-
-		if(validation.error) {
-			return next(new BadRequestError("Validation error: " + validation.errors))
-		}
-
-		const product = await Product.create(validation.data);
-
-		return res.status(201).json({
-			message: 'Successfully created product',
-			product,
-		});
 	}
 
 	async show(
@@ -142,7 +122,7 @@ class ProductController {
 				where: whereConditions,
 			});
 
-			const listOfProducts = products.map((product: IProduct) => {
+			const listOfProducts = products.map((product: ProductInstance) => {
 				return product;
 			});
 
