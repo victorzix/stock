@@ -8,7 +8,7 @@ export interface IProduct {
   name: string;
   price: number;
   sector: string;
-  quantity?: number | undefined;
+  quantity: number;
   total_income?: number;
 };
 
