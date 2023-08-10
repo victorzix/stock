@@ -39,7 +39,6 @@ class ProductController {
 		const validation = await validateData<IProduct>(createProductSchema, productData)
 
 		if(validation.error) {
-			console.log(validation.errors)
 			return next(new BadRequestError("Validation error: " + validation.errors))
 		}
 
@@ -81,13 +80,17 @@ class ProductController {
 
 		const total_income: number = priceCalc * quantityCalc;
 
-		const validProduct: IValidUpdate = await updateProductSchema.validate(
-			req.body,
-			{ strict: true }
+		const validation = await validateData<IValidUpdate>(
+			updateProductSchema,
+			req.body
 		);
 
+		if(validation.error) {
+			return next(new BadRequestError("Validation error: " + validation.errors))
+		}
+
 		const alreadyExists = await Product.findOne({
-			where: { name: validProduct.name },
+			where: { name: validation.data.name },
 		});
 		if (alreadyExists) {
 			next(new BadRequestError('Product Name already registered'));
@@ -95,7 +98,7 @@ class ProductController {
 		}
 
 		const productEdited = await product.update({
-			...validProduct,
+			...validation.data,
 			total_income,
 		});
 
