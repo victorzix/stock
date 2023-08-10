@@ -5,6 +5,7 @@ import {
 	ObjectSchema,
 	setLocale,
 	AnyObjectSchema,
+	ValidationError,
 } from 'yup';
 import { IProduct } from '../@types/IProduct';
 
@@ -14,6 +15,12 @@ export interface IValidProduct {
 	quantity: number;
 	price: number;
 	sector: string;
+}
+
+interface ValidResponse<T> {
+	data: T;
+	error: boolean;
+	errors: Array<string>;
 }
 
 export interface IValidUpdate extends Partial<Omit<IValidProduct, 'id'>> {}
@@ -41,7 +48,7 @@ export const createProductSchema: ObjectSchema<IValidProduct> = object({
 		.max(3)
 		.required()
 		.matches(/^\d+$/, 'Please enter only numbers'),
-})
+});
 
 export const updateProductSchema: ObjectSchema<IValidUpdate> = object({
 	name: string().min(1).max(60),
@@ -53,15 +60,24 @@ export const updateProductSchema: ObjectSchema<IValidUpdate> = object({
 		.matches(/^\d{1,3}$/, 'Please enter only numbers'),
 });
 
-export async function validateData(
+export async function validateData<T>(
 	schema: AnyObjectSchema,
-	productData: IProduct,
-): Promise<IValidProduct | string> {
+	data: T
+): Promise<ValidResponse<T>> {
 	try {
-		const data = await schema.validate(productData);
-		return data;
+		const parsedData = await schema.validate(data, {
+			strict: false,
+			stripUnknown: true,
+			abortEarly: false,
+		});
+		return { data: parsedData, error: false, errors: [] };
 	} catch (err: any) {
-    const msg: string = err.message
-		return msg;
+		let errors: string[] = [];
+
+		if (err instanceof ValidationError) {
+			errors = err.errors;
+		}
+
+		return { data, error: true, errors };
 	}
 }

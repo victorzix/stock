@@ -36,17 +36,14 @@ class ProductController {
 			return;
 		}
 
-		const validProduct: IValidProduct | string = await validateData(
-			createProductSchema,
-			productData,
-		);
+		const validation = await validateData<IProduct>(createProductSchema, productData)
 
-		if (typeof validProduct === 'string') {
-			next(new BadRequestError(validProduct));
-      return
+		if(validation.error) {
+			console.log(validation.errors)
+			return next(new BadRequestError("Validation error: " + validation.errors))
 		}
 
-		const product = await Product.create(validProduct);
+		const product = await Product.create(validation.data);
 
 		return res.status(201).json({
 			message: 'Successfully created product',
