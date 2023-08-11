@@ -7,7 +7,8 @@ import {
 	updateProductSchema,
 	validateData,
 } from '../utils/validators';
-import StoreProductService from '../services/store-product-service'; './store-product-service'
+import ProductServices from '../services/ProductServices';
+('./store-product-service');
 import { NotFoundError } from '../errors/NotFoundError';
 import { BadRequestError } from '../errors/BadRequestError';
 
@@ -19,13 +20,15 @@ class ProductController {
 	): Promise<Response | void> {
 		try {
 			const data: IProduct = req.body;
-			const product: ProductInstance = await StoreProductService.storeProduct(data)
+			const product: ProductInstance = await ProductServices.storeProduct(
+				data
+			);
 
 			return res.status(201).json({
-				message: "Product successfully created",
-				data: product
-			})
-		} catch(err) {
+				message: 'Product successfully created',
+				data: product,
+			});
+		} catch (err) {
 			return next(err);
 		}
 	}
@@ -35,13 +38,12 @@ class ProductController {
 		res: Response,
 		next: NextFunction
 	): Promise<Response | void> {
-		const product = await Product.findByPk(req.params.id);
-
-		if (!product) {
-			next(new NotFoundError('Product not found'));
-			return;
+		try{
+			const product = await ProductServices.showProduct(req.params.id)
+			res.status(200).json(product)
+		}	catch(err) {
+			return next(err);
 		}
-		return res.status(200).json(product);
 	}
 
 	async update(
@@ -65,8 +67,10 @@ class ProductController {
 			req.body
 		);
 
-		if(validation.error) {
-			return next(new BadRequestError("Validation error: " + validation.errors))
+		if (validation.error) {
+			return next(
+				new BadRequestError('Validation error: ' + validation.errors)
+			);
 		}
 
 		const alreadyExists = await Product.findOne({
