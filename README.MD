@@ -55,7 +55,7 @@ The following technologies were used to build this project:
 - [Node.js](https://nodejs.org/en/)
 - [ExpressJs](https://expressjs.com/)
 - [Sequelize](https://sequelize.org/)
-- [MySQL](https://www.mysql.com/)
+- [Postgres](https://www.postgresql.org/)
   
 
 # Endpoints
