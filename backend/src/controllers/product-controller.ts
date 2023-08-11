@@ -86,7 +86,7 @@ class ProductController {
 	): Promise<Response | void> {
 		try {
 			await ProductServices.deleteProduct(req.params.id);
-			return res.status(204);
+			return res.status(204).json("OK");
 		} catch (err: any) {
 			return next(err);
 		}
