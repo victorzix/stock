@@ -75,7 +75,7 @@ class ProductController {
 			res.status(200).json(listOfProducts);
 		} catch (err: any) {
 			next(err);
-			return
+			return;
 		}
 	}
 
@@ -86,7 +86,7 @@ class ProductController {
 	): Promise<Response | void> {
 		try {
 			await ProductServices.deleteProduct(req.params.id);
-			return res.status(204)
+			return res.status(204);
 		} catch (err: any) {
 			return next(err);
 		}
@@ -98,34 +98,10 @@ class ProductController {
 		next: NextFunction
 	): Promise<Response | void> {
 		try {
-			if (!req.query.sector) {
-				next(new NotFoundError('Please provide a sector'));
-				return;
-			}
-			const sector = {
-				sector: req.query.sector ? Number(req.query.sector) : undefined,
-			};
-
-			const products: ProductInstance[] = await Product.findAll({
-				where: sector,
-			});
-
-			if (products.length < 1) {
-				next(new BadRequestError('This sector is not registered'));
-				return;
-			}
-
-			const income = products.reduce(
-				(acumulator: number, prod: ProductInstance) => {
-					return acumulator + Number(prod.total_income);
-				},
-				0
-			);
-
+			const income = await ProductServices.getSectorIncome(req.query);
 			return res.status(200).json(income);
 		} catch (err: any) {
-			next(new BadRequestError(err.message));
-			return;
+			return next(err);
 		}
 	}
 }

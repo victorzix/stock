@@ -130,6 +130,32 @@ class ProductServices {
 
 		return;
 	}
+
+	async getSectorIncome(query: IProductQuery): Promise<number> {
+		if (!query.sector) {
+			throw new NotFoundError('Please provide a sector');
+		}
+		const sector = {
+			sector: query.sector ? Number(query.sector) : undefined,
+		};
+
+		const products: ProductInstance[] = await Product.findAll({
+			where: sector,
+		});
+
+		if (products.length < 1) {
+			throw new BadRequestError('This sector is not registered');
+		}
+
+		const income = products.reduce(
+			(acumulator: number, prod: ProductInstance) => {
+				return acumulator + Number(prod.total_income);
+			},
+			0
+		);
+
+		return income;
+	}
 }
 
 export default new ProductServices();
