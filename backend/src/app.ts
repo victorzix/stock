@@ -16,7 +16,7 @@ app.use(errorHandler)
 app.use((req, res) => {
   res.status(404).json({
     statusCode: 404,
-    message: "Please send at least one parameter"
+    message: "Cannot find this route"
   })
 })
 
