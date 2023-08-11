@@ -5,15 +5,13 @@
 
 ## Content Table
 - [Project Description](#project-description)
-- [Content Table](#content-table)
-  - [Project Status](#project-status)
-  - [Features](#features)
-  - [Requirements](#requirements)
+- [Project Status](#project-status)
+ - [Features](#features)
+ - [Requirements](#requirements)
 - [Installation](#installation)
-  - [Clone this repository](#clone-this-repository)
-  - [Install dependencies](#install-dependencies)
-  - [Run the application](#run-the-application)
-  - [Technologies](#technologies)
+ - [Install dependencies](#install-dependencies)
+ - [Run the application](#run-the-application)
+ - [Technologies](#technologies)
 
 ### Project Status
 <h4>🚧 In Progress 🚧</h4>
