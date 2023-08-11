@@ -59,7 +59,7 @@ class ProductController {
 				update,
 			});
 		} catch (err) {
-			next(err);
+			return next(err);
 		}
 	}
 
@@ -70,11 +70,12 @@ class ProductController {
 	): Promise<Response | void> {
 		try {
 			const query: IProductQuery = req.query;
-			const listOfProducts = await ProductServices.index(query);
+			const listOfProducts = await ProductServices.listProducts(query);
 
 			res.status(200).json(listOfProducts);
 		} catch (err: any) {
 			next(err);
+			return
 		}
 	}
 
@@ -84,19 +85,10 @@ class ProductController {
 		next: NextFunction
 	): Promise<Response | void> {
 		try {
-			const product = await Product.findByPk(req.params.id);
-
-			if (!product) {
-				next(new NotFoundError('Product not found'));
-				return;
-			}
-
-			await product.destroy();
-
-			return res.status(204).json('Successfully deleted');
+			await ProductServices.deleteProduct(req.params.id);
+			return res.status(204)
 		} catch (err: any) {
-			next(new BadRequestError(err.message));
-			return;
+			return next(err);
 		}
 	}
 

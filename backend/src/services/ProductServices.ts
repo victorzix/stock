@@ -37,7 +37,7 @@ class ProductServices {
 		return product;
 	}
 
-	async showProduct(params: string): Promise<ProductInstance | void> {
+	async showProduct(params: string): Promise<ProductInstance> {
 		const product = await Product.findByPk(params);
 
 		if (!product) {
@@ -46,7 +46,7 @@ class ProductServices {
 		return product;
 	}
 
-	async updateProduct(id: string, params: IProduct) {
+	async updateProduct(id: string, params: IProduct): Promise<ProductInstance> {
 		const product = await Product.findByPk(id);
 		if (!product) {
 			throw new NotFoundError('Product not found');
@@ -83,7 +83,7 @@ class ProductServices {
 		return productEdited;
 	}
 
-	async index(params: IProductQuery) {
+	async listProducts(params: IProductQuery): Promise<ProductInstance[]> {
 		const query: IProductQuery = {
 			name: params.name ? `%${params.name}%` : '',
 			price: params.price ? Number(params.price) : undefined,
@@ -117,6 +117,18 @@ class ProductServices {
 		});
 
 		return listOfProducts;
+	}
+
+	async deleteProduct(params: string): Promise<void> {
+		const product = await Product.findByPk(params);
+
+		if (!product) {
+			throw new NotFoundError('Product not found');
+		}
+
+		await product.destroy();
+
+		return;
 	}
 }
 
