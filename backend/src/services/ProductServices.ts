@@ -133,7 +133,7 @@ class ProductServices {
 
 	async getSectorIncome(query: IProductQuery): Promise<number> {
 		if (!query.sector) {
-			throw new NotFoundError('Please provide a sector');
+			throw new BadRequestError('Please provide a sector');
 		}
 		const sector = {
 			sector: query.sector ? Number(query.sector) : undefined,
@@ -144,7 +144,7 @@ class ProductServices {
 		});
 
 		if (products.length < 1) {
-			throw new BadRequestError('This sector is not registered');
+			throw new NotFoundError('This sector is not registered');
 		}
 
 		const income = products.reduce(
