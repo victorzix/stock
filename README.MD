@@ -34,6 +34,7 @@ Before running, you will need to install [Git](https://git-scm.com) and [Node.js
 
 ```
 git clone "https://github.com/victorzix/stock"
+cd [FOLDER NAME]
 cd backend
 ```
 
@@ -100,8 +101,8 @@ The following technologies were used to build this project:
 - # Index
   `GET /products`
   ## Request example
-  ```json
-  can be null or send a query string
+  ```
+  // can be null or send a query string
   ```
   
   ## Response example
@@ -142,8 +143,8 @@ The following technologies were used to build this project:
 - # Show
   `GET /products/product/:id`
   ## Request example
-  ```json
-  send id in params
+  ```
+  // send id in params
   ```
   
   ## Response example
@@ -177,8 +178,8 @@ The following technologies were used to build this project:
 - # Get Incomes
   `GET /products/income/`
   ## Request example
-  ```json
-  send a sector in query
+  ```
+  // send a sector in query
   ```
   
   ## Response example
@@ -203,7 +204,6 @@ The following technologies were used to build this project:
   `PATCH /products/:id`
   ## Request example
   ```json
-  send id in params
   {
 	"name": "aa",
 	"price": 6,
@@ -253,14 +253,14 @@ The following technologies were used to build this project:
 - # Delete
   `DELETE /products/:id`
   ## Request example
-  ```json
-  send id in params
+  ```
+  // send id in params
   ```
   
   ## Response example
   `204 No Content`
-  ```json
-  No body returned for response
+  ```
+  // No body returned for response
   ```
 
   `404 Not Found`
