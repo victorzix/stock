@@ -20,9 +20,7 @@ class ProductController {
 	): Promise<Response | void> {
 		try {
 			const data: IProduct = req.body;
-			const product: ProductInstance = await ProductServices.storeProduct(
-				data
-			);
+			const product: ProductInstance = await ProductServices.storeProduct(data);
 
 			return res.status(201).json({
 				message: 'Product successfully created',
@@ -38,10 +36,10 @@ class ProductController {
 		res: Response,
 		next: NextFunction
 	): Promise<Response | void> {
-		try{
-			const product = await ProductServices.showProduct(req.params.id)
-			res.status(200).json(product)
-		}	catch(err) {
+		try {
+			const product = await ProductServices.showProduct(req.params.id);
+			res.status(200).json(product);
+		} catch (err) {
 			return next(err);
 		}
 	}
@@ -51,12 +49,15 @@ class ProductController {
 		res: Response,
 		next: NextFunction
 	): Promise<Response | void> {
-		try{
-			const update = await ProductServices.updateProduct(req.params.id, req.body)
+		try {
+			const update = await ProductServices.updateProduct(
+				req.params.id,
+				req.body
+			);
 			return res.status(200).json({
-				message: "Successfully updated product",
-				update
-			})
+				message: 'Successfully updated product',
+				update,
+			});
 		} catch (err) {
 			next(err);
 		}
@@ -68,42 +69,12 @@ class ProductController {
 		next: NextFunction
 	): Promise<Response | void> {
 		try {
-			const query: IProductQuery = {
-				name: req.query.name ? `%${req.query.name}%` : '',
-				price: req.query.price ? Number(req.query.price) : undefined,
-				sector: req.query.sector ? `${req.query.sector}` : '',
-			};
+			const query: IProductQuery = req.query;
+			const listOfProducts = await ProductServices.index(query);
 
-			const whereConditions: FindOptions['where'] = {};
-
-			if (query.name) {
-				whereConditions.name = {
-					[Op.like]: query.name,
-				};
-			}
-			if (query.price) {
-				whereConditions.price = {
-					[Op.lte]: query.price,
-				};
-			}
-			if (query.sector) {
-				whereConditions.sector = {
-					[Op.like]: query.sector,
-				};
-			}
-
-			const products = await Product.findAll({
-				where: whereConditions,
-			});
-
-			const listOfProducts = products.map((product: ProductInstance) => {
-				return product;
-			});
-
-			return res.status(200).json(listOfProducts);
+			res.status(200).json(listOfProducts);
 		} catch (err: any) {
-			next(new BadRequestError(err.message));
-			return;
+			next(err);
 		}
 	}
 

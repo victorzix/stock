@@ -1,4 +1,4 @@
-import { IProduct, ProductInstance } from '../@types/IProduct';
+import { IProduct, ProductInstance, IProductQuery } from '../@types/IProduct';
 import { Product } from '../models/Product';
 import { generateId } from '../utils/random-bytes';
 import {
@@ -9,6 +9,7 @@ import {
 } from '../utils/validators';
 import { BadRequestError } from '../errors/BadRequestError';
 import { NotFoundError } from '../errors/NotFoundError';
+import { FindOptions, Op } from 'sequelize';
 
 class ProductServices {
 	async storeProduct(data: IProduct): Promise<ProductInstance> {
@@ -68,7 +69,7 @@ class ProductServices {
 			const alreadyExists = await Product.findOne({
 				where: { name: validation.data.name },
 			});
-			
+
 			if (alreadyExists) {
 				throw new BadRequestError('Product Name already registered');
 			}
@@ -80,6 +81,42 @@ class ProductServices {
 		});
 
 		return productEdited;
+	}
+
+	async index(params: IProductQuery) {
+		const query: IProductQuery = {
+			name: params.name ? `%${params.name}%` : '',
+			price: params.price ? Number(params.price) : undefined,
+			sector: params.sector ? `${params.sector}` : '',
+		};
+
+		const whereConditions: FindOptions['where'] = {};
+
+		if (query.name) {
+			whereConditions.name = {
+				[Op.like]: query.name,
+			};
+		}
+		if (query.price) {
+			whereConditions.price = {
+				[Op.lte]: query.price,
+			};
+		}
+		if (query.sector) {
+			whereConditions.sector = {
+				[Op.like]: query.sector,
+			};
+		}
+
+		const products = await Product.findAll({
+			where: whereConditions,
+		});
+
+		const listOfProducts = products.map((product: ProductInstance) => {
+			return product;
+		});
+
+		return listOfProducts;
 	}
 }
 
