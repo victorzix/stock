@@ -6,7 +6,7 @@ const db_password = process.env.DB_PASSWORD;
 
 export const sequelize = new Sequelize(db_name, db_user, db_password, {
 	host: process.env.DB_HOST,
-	dialect: 'mysql',
+	dialect: 'postgres',
 });
 
 export async function connection(): Promise<void> {

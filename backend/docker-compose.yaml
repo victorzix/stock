@@ -1,11 +1,17 @@
-version: '3'
+version: '3.5'
+
 services:
-  db:
-    image: mysql
+  postgres:
+    image: postgres:latest
+    container_name: my-postgres
     environment:
-      MYSQL_ROOT_PASSWORD: '123456'
-      MYSQL_DATABASE: 'stock'
-    ports:
-      - "3306:3306"
+      POSTGRES_DB: stock
+      POSTGRES_USER: myuser
+      POSTGRES_PASSWORD: 123456
+    ports: 
+      - "5432:5432"
     volumes:
-      - ./docker/data:/var/lib/mysql-stock
+      - postgres-data:/var/lib/postgresql/data
+
+volumes:
+  postgres-data:
