@@ -1,7 +1,12 @@
 import { IProduct, ProductInstance } from '../@types/IProduct';
 import { Product } from '../models/Product';
 import { generateId } from '../utils/random-bytes';
-import { createProductSchema, validateData } from '../utils/validators';
+import {
+	IValidUpdate,
+	createProductSchema,
+	updateProductSchema,
+	validateData,
+} from '../utils/validators';
 import { BadRequestError } from '../errors/BadRequestError';
 import { NotFoundError } from '../errors/NotFoundError';
 
@@ -31,13 +36,50 @@ class ProductServices {
 		return product;
 	}
 
-	async showProduct(data: string): Promise<ProductInstance | void> {
-		const product = await Product.findByPk(data);
+	async showProduct(params: string): Promise<ProductInstance | void> {
+		const product = await Product.findByPk(params);
 
 		if (!product) {
-			throw new NotFoundError("Product not found")
+			throw new NotFoundError('Product not found');
 		}
-		return product
+		return product;
+	}
+
+	async updateProduct(id: string, params: IProduct) {
+		const product = await Product.findByPk(id);
+		if (!product) {
+			throw new NotFoundError('Product not found');
+		}
+
+		const priceCalc: number = params.price || product.price;
+		const quantityCalc: number = params.quantity || Number(product.quantity);
+
+		const total_income: number = priceCalc * quantityCalc;
+
+		const validation = await validateData<IValidUpdate>(
+			updateProductSchema,
+			params
+		);
+
+		if (validation.error) {
+			throw new BadRequestError('Validation error: ' + validation.errors);
+		}
+		if (validation.data.name) {
+			const alreadyExists = await Product.findOne({
+				where: { name: validation.data.name },
+			});
+			
+			if (alreadyExists) {
+				throw new BadRequestError('Product Name already registered');
+			}
+		}
+
+		const productEdited = await product.update({
+			...validation.data,
+			total_income,
+		});
+
+		return productEdited;
 	}
 }
 

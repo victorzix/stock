@@ -51,45 +51,15 @@ class ProductController {
 		res: Response,
 		next: NextFunction
 	): Promise<Response | void> {
-		const product = await Product.findByPk(req.params.id);
-		if (!product) {
-			next(new NotFoundError('Product not found'));
-			return;
+		try{
+			const update = await ProductServices.updateProduct(req.params.id, req.body)
+			return res.status(200).json({
+				message: "Successfully updated product",
+				update
+			})
+		} catch (err) {
+			next(err);
 		}
-
-		const priceCalc: number = req.body.price || product.price;
-		const quantityCalc: number = req.body.quantity || product.quantity;
-
-		const total_income: number = priceCalc * quantityCalc;
-
-		const validation = await validateData<IValidUpdate>(
-			updateProductSchema,
-			req.body
-		);
-
-		if (validation.error) {
-			return next(
-				new BadRequestError('Validation error: ' + validation.errors)
-			);
-		}
-
-		const alreadyExists = await Product.findOne({
-			where: { name: validation.data.name },
-		});
-		if (alreadyExists) {
-			next(new BadRequestError('Product Name already registered'));
-			return;
-		}
-
-		const productEdited = await product.update({
-			...validation.data,
-			total_income,
-		});
-
-		return res.status(200).json({
-			message: 'Updated successfully',
-			productEdited,
-		});
 	}
 
 	async index(
