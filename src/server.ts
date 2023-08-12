@@ -15,3 +15,4 @@ try {
 }
 
 connection();
+Product.sync()
