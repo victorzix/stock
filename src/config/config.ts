@@ -1,4 +1,4 @@
-export default {
+ const config = {
   development: {
     username: process.env.DB_USER,
     password: process.env.DB_PASSWORD,
@@ -24,3 +24,7 @@ export default {
     dialect: 'postgres',
   } 
 }
+  
+  
+
+module.exports = config
