@@ -4,7 +4,6 @@ import {
 } from "sequelize";
 
 export interface IProduct {
-  id: string;
   name: string;
   price: number;
   sector: string;
@@ -18,9 +17,11 @@ export interface IProductQuery {
   sector?: string;
 }
 
-interface IProductCreation extends Optional<IProduct, 'quantity'> {}
+interface IProductCreation extends Optional<IProduct, 'quantity'> {
+  id: string
+}
 
-export class ProductInstance extends Model<IProduct, IProductCreation>{
+export class ProductInstance extends Model<IProduct & {id: string}, IProductCreation>{
   declare id: string;
   declare name: string;
   declare price: number;
