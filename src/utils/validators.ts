@@ -49,13 +49,13 @@ export const createProductSchema: ObjectSchema<IValidProduct> = object({
 });
 
 export const updateProductSchema: ObjectSchema<IValidUpdate> = object({
-	name: string().min(1).max(60),
-	quantity: number().min(1).max(5000),
-	price: number().min(1).max(10000),
+	name: string().min(1).max(60).strict(),
+	quantity: number().min(1).max(5000).strict(),
+	price: number().min(1).max(10000).strict(),
 	sector: string()
 		.min(0)
 		.max(3)
-		.matches(/^\d{1,3}$/, 'Please enter only numbers'),
+		.matches(/^\d{1,3}$/, 'Please enter only numbers').strict(),
 });
 
 export async function validateData<T>(
