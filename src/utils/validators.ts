@@ -38,14 +38,14 @@ setLocale({
 });
 
 export const createProductSchema: ObjectSchema<IValidProduct> = object({
-	name: string().min(1).max(60).required(),
-	quantity: number().min(1).max(5000).required(),
-	price: number().min(1).max(10000).required(),
+	name: string().min(1).max(60).required().strict(),
+	quantity: number().min(1).max(5000).required().strict(),
+	price: number().min(1).max(10000).required().strict(),
 	sector: string()
 		.min(0)
 		.max(3)
 		.required()
-		.matches(/^\d+$/, 'Please enter only numbers'),
+		.matches(/^\d+$/, 'Please enter only numbers').strict(),
 });
 
 export const updateProductSchema: ObjectSchema<IValidUpdate> = object({
