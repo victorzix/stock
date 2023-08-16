@@ -1,16 +1,8 @@
 import { IProduct, IProductQuery, ProductInstance } from '../@types/IProduct';
-import { Product } from '../models/Product';
 import { NextFunction, Request, Response } from 'express';
-import { Op, FindOptions } from 'sequelize';
-import {
-	IValidUpdate,
-	updateProductSchema,
-	validateData,
-} from '../utils/validators';
 import ProductServices from '../services/ProductServices';
 ('./store-product-service');
-import { NotFoundError } from '../errors/NotFoundError';
-import { BadRequestError } from '../errors/BadRequestError';
+
 
 class ProductController {
 	async store(
