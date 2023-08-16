@@ -7,7 +7,7 @@ import {
 	AnyObjectSchema,
 	ValidationError,
 } from 'yup';
-import { IProduct } from '../@types/IProduct';
+import Product from '../@types/product/Product';
 
 export interface IValidProduct {
 	name: string;

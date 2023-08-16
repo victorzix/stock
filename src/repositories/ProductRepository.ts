@@ -3,55 +3,56 @@ import {
 	IProductCreation,
 	IProductQuery,
 	IUpdateProduct,
-	ProductInstance,
+	Product,
+	ProductModelDefinition,
 } from '../@types/product/index';
-import { Product } from '../models/Product';
+import { ProductModel } from '../models/Product';
 import { IProductsRepository } from './IProductsRepository';
 import { Op } from 'sequelize';
 
 export class ProductRepository implements IProductsRepository {
-	async create(data: IProductCreation): Promise<ProductInstance> {
-		const product = await Product.create(data);
-		return product;
+	async create(data: IProductCreation): Promise<Product> {
+		const product = await ProductModel.create(data);
+		return product.dataValues;
 	}
 
 	async update(
 		id: string,
 		data: IUpdateProduct
-	): Promise<ProductInstance | null> {
-		const product = await Product.findByPk(id);
+	): Promise<Product | null> {
+		const product = await ProductModel.findByPk(id);
 		if (!product) return null;
 
 		const updated = await product.update({
 			...data,
 		});
 
-		return updated;
+		return updated.dataValues;
 	}
 
 	async delete(id: string): Promise<void | null> {
-		const product = await Product.findByPk(id);
+		const product = await ProductModel.findByPk(id);
 		if (!product) return null;
 
 		await product.destroy();
 		return;
 	}
 
-	async findOne(query: IProductQuery): Promise<ProductInstance | null> {
-		const product = await Product.findOne({
+	async findOne(query: IProductQuery): Promise<Product | null> {
+		const product = await ProductModel.findOne({
 			where: {
 				...query,
 			},
 		});
-		return product;
+		return product?.dataValues || null;
 	}
 
-	async findById(id: string): Promise<ProductInstance | null> {
-		const product = await Product.findByPk(id);
-		return product;
+	async findById(id: string): Promise<Product | null> {
+		const product = await ProductModel.findByPk(id);
+		return product?.dataValues || null;
 	}
 
-	async list(userQuery: IProductQuery): Promise<ProductInstance[]> {
+	async list(userQuery: IProductQuery): Promise<Product[]> {
 		const query: IProductQuery = {
 			name: userQuery.name ? `%${userQuery.name}%` : '',
 			price: userQuery.price ? Number(userQuery.price) : undefined,
@@ -76,11 +77,13 @@ export class ProductRepository implements IProductsRepository {
 			};
 		}
 
-		const products = await Product.findAll({
+		const products = await ProductModel.findAll({
 			where: whereConditions,
 		});
 
-		return products;
+		const productsData = products.map(p => p.dataValues)
+
+		return productsData;
 	}
 }
 

@@ -1,10 +1,9 @@
 import {
-	IProduct,
-	ProductInstance,
+	Product,
 	IProductQuery,
 	IUpdateProduct,
+	IProductCreation,
 } from '../@types/product/index';
-import { Product } from '../models/Product';
 import { generateId } from '../utils/random-bytes';
 import {
 	IValidUpdate,
@@ -17,7 +16,7 @@ import { NotFoundError } from '../errors/NotFoundError';
 import ProductRepository from '../repositories/ProductRepository';
 
 class ProductServices {
-	async storeProduct(data: IProduct): Promise<ProductInstance> {
+	async storeProduct(data: IProductCreation): Promise<Product> {
 		const productCheck = await ProductRepository.findOne({ name: data.name });
 
 		if (productCheck) {
@@ -27,7 +26,7 @@ class ProductServices {
 		const id = generateId();
 		const total_income = data.quantity * data.price;
 
-		const validation = await validateData<IProduct>(createProductSchema, data);
+		const validation = await validateData<Product>(createProductSchema, data);
 
 		if (validation.error) {
 			throw new BadRequestError('Validation error: ' + validation.errors);
@@ -42,7 +41,7 @@ class ProductServices {
 		return product;
 	}
 
-	async showProduct(id: string): Promise<ProductInstance> {
+	async showProduct(id: string): Promise<Product> {
 		const product = await ProductRepository.findById(id);
 
 		if (!product) {
@@ -54,7 +53,7 @@ class ProductServices {
 	async updateProduct(
 		id: string,
 		data: IUpdateProduct
-	): Promise<ProductInstance> {
+	): Promise<Product> {
 		const product = await ProductRepository.findById(id);
 
 		if (!product) {
@@ -75,9 +74,9 @@ class ProductServices {
 			throw new BadRequestError('Validation error: ' + validation.errors);
 		}
 		if (validation.data.name) {
-			const alreadyExists = await Product.findOne({
-				where: { name: validation.data.name },
-			});
+			const alreadyExists = await ProductRepository.findOne(
+				{ name: validation.data.name },
+			);
 
 			if (alreadyExists) {
 				throw new BadRequestError('Product Name already registered');
@@ -91,10 +90,10 @@ class ProductServices {
 		return productEdited!;
 	}
 
-	async listProducts(query: IProductQuery): Promise<ProductInstance[]> {
+	async listProducts(query: IProductQuery): Promise<Product[]> {
 		const products = await ProductRepository.list(query)
 
-		const listOfProducts = products.map((product: ProductInstance) => {
+		const listOfProducts = products.map((product: Product) => {
 			return product;
 		})
 		return listOfProducts
@@ -122,7 +121,7 @@ class ProductServices {
 		}
 
 		const income = products.reduce(
-			(acumulator: number, prod: ProductInstance) => {
+			(acumulator: number, prod: Product) => {
 				return acumulator + Number(prod.total_income);
 			},
 			0

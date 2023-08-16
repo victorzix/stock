@@ -1,4 +1,4 @@
-import { IProduct, IProductQuery, ProductInstance } from '../@types/product/index';
+import { ICreateProduct, IProductQuery, IUpdateProduct, Product } from '../@types/product/index';
 import { NextFunction, Request, Response } from 'express';
 import ProductServices from '../services/ProductServices';
 ('./store-product-service');
@@ -11,8 +11,8 @@ class ProductController {
 		next: NextFunction
 	): Promise<Response | void> {
 		try {
-			const data: IProduct = req.body;
-			const product: ProductInstance = await ProductServices.storeProduct(data);
+			const data: ICreateProduct = req.body;
+			const product: Product = await ProductServices.storeProduct(data);
 
 			return res.status(201).json({
 				message: 'Product successfully created',
@@ -42,7 +42,7 @@ class ProductController {
 		next: NextFunction
 	): Promise<Response | void> {
 		try {
-			const update = await ProductServices.updateProduct(
+			const update: IUpdateProduct = await ProductServices.updateProduct(
 				req.params.id,
 				req.body
 			);
