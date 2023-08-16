@@ -22,6 +22,14 @@ export interface IProductCreation extends IProduct{
   total_income: number;
 }
 
+export interface IUpdateProduct {
+  name?: string;
+  price?: number;
+  sector?: string;
+  total_income?: number;
+  quantity?: number;
+}
+
 export class ProductInstance extends Model<IProduct & IProductCreation, IProductCreation>{
   declare id: string;
   declare name: string;
