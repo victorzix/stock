@@ -1,6 +1,6 @@
 import Sequelize from 'sequelize';
 import { sequelize } from '../database/db';
-import { ProductInstance } from '../@types/IProduct';
+import { ProductInstance } from '../@types/product/index';
 
 
 export const Product = sequelize.define<ProductInstance>('Product', {

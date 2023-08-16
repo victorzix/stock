@@ -3,7 +3,7 @@ import {
 	IProductQuery,
 	IUpdateProduct,
 	ProductInstance,
-} from '../@types/IProduct';
+} from '../@types/product/index';
 
 export interface IProductsRepository {
 	create(data: IProductCreation): Promise<ProductInstance>;

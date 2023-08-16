@@ -1,4 +1,4 @@
-import { IProduct, IProductQuery, ProductInstance } from '../@types/IProduct';
+import { IProduct, IProductQuery, ProductInstance } from '../@types/product/index';
 import { NextFunction, Request, Response } from 'express';
 import ProductServices from '../services/ProductServices';
 ('./store-product-service');

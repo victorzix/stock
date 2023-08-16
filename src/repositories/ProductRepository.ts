@@ -4,7 +4,7 @@ import {
 	IProductQuery,
 	IUpdateProduct,
 	ProductInstance,
-} from '../@types/IProduct';
+} from '../@types/product/index';
 import { Product } from '../models/Product';
 import { IProductsRepository } from './IProductsRepository';
 import { Op } from 'sequelize';

@@ -3,7 +3,7 @@ import {
 	ProductInstance,
 	IProductQuery,
 	IUpdateProduct,
-} from '../@types/IProduct';
+} from '../@types/product/index';
 import { Product } from '../models/Product';
 import { generateId } from '../utils/random-bytes';
 import {
@@ -15,7 +15,6 @@ import {
 import { BadRequestError } from '../errors/BadRequestError';
 import { NotFoundError } from '../errors/NotFoundError';
 import ProductRepository from '../repositories/ProductRepository';
-import { FindOptions, Op } from 'sequelize';
 
 class ProductServices {
 	async storeProduct(data: IProduct): Promise<ProductInstance> {

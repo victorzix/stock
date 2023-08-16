@@ -1,4 +1,4 @@
-import { IProduct } from "../../src/@types/IProduct";
+import { IProduct } from "../../src/@types/product/index";
 import { createProductSchema, updateProductSchema, validateData } from "../../src/utils/validators";
 import { describe, expect, it } from "@jest/globals";
 
