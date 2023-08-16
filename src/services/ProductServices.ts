@@ -1,4 +1,9 @@
-import { IProduct, ProductInstance, IProductQuery } from '../@types/IProduct';
+import {
+	IProduct,
+	ProductInstance,
+	IProductQuery,
+	IUpdateProduct,
+} from '../@types/IProduct';
 import { Product } from '../models/Product';
 import { generateId } from '../utils/random-bytes';
 import {
@@ -9,11 +14,12 @@ import {
 } from '../utils/validators';
 import { BadRequestError } from '../errors/BadRequestError';
 import { NotFoundError } from '../errors/NotFoundError';
+import ProductRepository from '../repositories/ProductRepository';
 import { FindOptions, Op } from 'sequelize';
 
 class ProductServices {
 	async storeProduct(data: IProduct): Promise<ProductInstance> {
-		const productCheck = await Product.findOne({ where: { name: data.name } });
+		const productCheck = await ProductRepository.findOne({ name: data.name });
 
 		if (productCheck) {
 			throw new BadRequestError('Product already exists');
@@ -28,7 +34,7 @@ class ProductServices {
 			throw new BadRequestError('Validation error: ' + validation.errors);
 		}
 
-		const product = await Product.create({
+		const product = await ProductRepository.create({
 			...validation.data,
 			id: id,
 			total_income,
@@ -37,8 +43,8 @@ class ProductServices {
 		return product;
 	}
 
-	async showProduct(params: string): Promise<ProductInstance> {
-		const product = await Product.findByPk(params);
+	async showProduct(id: string): Promise<ProductInstance> {
+		const product = await ProductRepository.findById(id);
 
 		if (!product) {
 			throw new NotFoundError('Product not found');
@@ -46,20 +52,24 @@ class ProductServices {
 		return product;
 	}
 
-	async updateProduct(id: string, params: IProduct): Promise<ProductInstance> {
-		const product = await Product.findByPk(id);
+	async updateProduct(
+		id: string,
+		data: IUpdateProduct
+	): Promise<ProductInstance> {
+		const product = await ProductRepository.findById(id);
+
 		if (!product) {
 			throw new NotFoundError('Product not found');
 		}
 
-		const priceCalc: number = params.price || product.price;
-		const quantityCalc: number = params.quantity || Number(product.quantity);
+		const priceCalc: number = data.price || product.price;
+		const quantityCalc: number = data.quantity || Number(product.quantity);
 
 		const total_income: number = priceCalc * quantityCalc;
 
 		const validation = await validateData<IValidUpdate>(
 			updateProductSchema,
-			params
+			data
 		);
 
 		if (validation.error) {
@@ -74,73 +84,39 @@ class ProductServices {
 				throw new BadRequestError('Product Name already registered');
 			}
 		}
-		const productEdited = await product.update({
+		const productEdited = await ProductRepository.update(id, {
 			...validation.data,
 			total_income,
 		});
 
-		return productEdited;
+		return productEdited!;
 	}
 
-	async listProducts(params: IProductQuery): Promise<ProductInstance[]> {
-		const query: IProductQuery = {
-			name: params.name ? `%${params.name}%` : '',
-			price: params.price ? Number(params.price) : undefined,
-			sector: params.sector ? `${params.sector}` : '',
-		};
-
-		const whereConditions: FindOptions['where'] = {};
-
-		if (query.name) {
-			whereConditions.name = {
-				[Op.like]: query.name,
-			};
-		}
-		if (query.price) {
-			whereConditions.price = {
-				[Op.lte]: query.price,
-			};
-		}
-		if (query.sector) {
-			whereConditions.sector = {
-				[Op.like]: query.sector,
-			};
-		}
-
-		const products = await Product.findAll({
-			where: whereConditions,
-		});
+	async listProducts(query: IProductQuery): Promise<ProductInstance[]> {
+		const products = await ProductRepository.list(query)
 
 		const listOfProducts = products.map((product: ProductInstance) => {
 			return product;
-		});
-
-		return listOfProducts;
+		})
+		return listOfProducts
 	}
 
-	async deleteProduct(params: string): Promise<void> {
-		const product = await Product.findByPk(params);
+	async deleteProduct(id: string): Promise<void> {
+		const product = await ProductRepository.findById(id);
 
 		if (!product) {
 			throw new NotFoundError('Product not found');
 		}
 
-		await product.destroy();
-
 		return;
 	}
 
 	async getSectorIncome(query: IProductQuery): Promise<number> {
+		const products = await ProductRepository.list(query)
+
 		if (!query.sector) {
 			throw new BadRequestError('Please provide a sector');
 		}
-		const sector = {
-			sector: query.sector ? Number(query.sector) : undefined,
-		};
-
-		const products: ProductInstance[] = await Product.findAll({
-			where: sector,
-		});
 
 		if (products.length < 1) {
 			throw new NotFoundError('This sector is not registered');
