@@ -8,7 +8,7 @@ export interface IProduct {
   price: number;
   sector: string;
   quantity: number;
-  total_income?: number;
+
 };
 
 export interface IProductQuery {
@@ -17,11 +17,12 @@ export interface IProductQuery {
   sector?: string;
 }
 
-interface IProductCreation extends Optional<IProduct, 'quantity'> {
-  id: string
+export interface IProductCreation extends IProduct{
+  id: string;
+  total_income: number;
 }
 
-export class ProductInstance extends Model<IProduct & {id: string}, IProductCreation>{
+export class ProductInstance extends Model<IProduct & IProductCreation, IProductCreation>{
   declare id: string;
   declare name: string;
   declare price: number;
