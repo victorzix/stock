@@ -74,7 +74,6 @@ class ProductServices {
 				throw new BadRequestError('Product Name already registered');
 			}
 		}
-
 		const productEdited = await product.update({
 			...validation.data,
 			total_income,
