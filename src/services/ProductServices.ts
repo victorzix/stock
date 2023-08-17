@@ -15,7 +15,7 @@ import { BadRequestError } from '../errors/BadRequestError';
 import { NotFoundError } from '../errors/NotFoundError';
 import ProductRepository from '../repositories/ProductRepository';
 
-class ProductServices {
+export class ProductServices {
 	async storeProduct(data: IProductCreation): Promise<Product> {
 		const productCheck = await ProductRepository.findOne({ name: data.name });
 
