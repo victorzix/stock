@@ -3,6 +3,7 @@ import {
 	IProductQuery,
 	IUpdateProduct,
 	IProductCreation,
+	ICreateProduct,
 } from '../@types/product/index';
 import { generateId } from '../utils/random-bytes';
 import {
@@ -16,7 +17,7 @@ import { NotFoundError } from '../errors/NotFoundError';
 import ProductRepository from '../repositories/ProductRepository';
 
 export class ProductServices {
-	async storeProduct(data: IProductCreation): Promise<Product> {
+	async storeProduct(data: ICreateProduct): Promise<Product> {
 		const productCheck = await ProductRepository.findOne({ name: data.name });
 
 		if (productCheck) {
@@ -26,7 +27,11 @@ export class ProductServices {
 		const id = generateId();
 		const total_income = data.quantity * data.price;
 
-		const validation = await validateData<Product>(createProductSchema, data);
+		const validation = await validateData<Product>(createProductSchema, {
+			...data,
+			id,
+			total_income,
+		});
 
 		if (validation.error) {
 			throw new BadRequestError('Validation error: ' + validation.errors);
@@ -50,10 +55,7 @@ export class ProductServices {
 		return product;
 	}
 
-	async updateProduct(
-		id: string,
-		data: IUpdateProduct
-	): Promise<Product> {
+	async updateProduct(id: string, data: IUpdateProduct): Promise<Product> {
 		const product = await ProductRepository.findById(id);
 
 		if (!product) {
@@ -74,9 +76,9 @@ export class ProductServices {
 			throw new BadRequestError('Validation error: ' + validation.errors);
 		}
 		if (validation.data.name) {
-			const alreadyExists = await ProductRepository.findOne(
-				{ name: validation.data.name },
-			);
+			const alreadyExists = await ProductRepository.findOne({
+				name: validation.data.name,
+			});
 
 			if (alreadyExists) {
 				throw new BadRequestError('Product Name already registered');
@@ -91,12 +93,12 @@ export class ProductServices {
 	}
 
 	async listProducts(query: IProductQuery): Promise<Product[]> {
-		const products = await ProductRepository.list(query)
+		const products = await ProductRepository.list(query);
 
 		const listOfProducts = products.map((product: Product) => {
 			return product;
-		})
-		return listOfProducts
+		});
+		return listOfProducts;
 	}
 
 	async deleteProduct(id: string): Promise<void> {
@@ -110,7 +112,7 @@ export class ProductServices {
 	}
 
 	async getSectorIncome(query: IProductQuery): Promise<number> {
-		const products = await ProductRepository.list(query)
+		const products = await ProductRepository.list(query);
 
 		if (!query.sector) {
 			throw new BadRequestError('Please provide a sector');
@@ -120,12 +122,9 @@ export class ProductServices {
 			throw new NotFoundError('This sector is not registered');
 		}
 
-		const income = products.reduce(
-			(acumulator: number, prod: Product) => {
-				return acumulator + Number(prod.total_income);
-			},
-			0
-		);
+		const income = products.reduce((acumulator: number, prod: Product) => {
+			return acumulator + Number(prod.total_income);
+		}, 0);
 
 		return income;
 	}
