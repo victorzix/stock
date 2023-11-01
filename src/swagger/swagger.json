@@ -1,0 +1,124 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Stock API",
+    "description": "An API created to manage a stock",
+    "contact": {
+      "email": "viphaelnev@gmail.com"
+    }
+  },
+  "servers": [
+    {
+      "url": "http://localhost:3000",
+      "description": "Main server"
+    }
+  ],
+  "paths": {
+    "/products": {
+      "post": {
+        "summary": "Product register",
+        "description": "Route for adding a new product",
+        "tags": ["Products"],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                  "$ref": "#/components/schemas/CreateProduct"
+                },
+                "examples": {
+                  "product": {
+                    "value": {
+                      "name": "Bread",
+                      "price": 1.20,
+                      "sector": "1",
+                      "quantity": 10
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "responses": {
+            "201": {
+              "description": "Created",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "message": {
+                        "type": "string",
+                        "description": "Product successfully created"
+                      },
+                      "data": {
+                        "$ref": "#/components/schemas/Product"
+                      } 
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+  "components": {
+    "schemas": {
+      "CreateProduct": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "price": {
+            "type": "number",
+            "format": "double"
+          },
+          "sector": {
+            "type": "string"
+          },
+          "quantity": {
+            "type": "number",
+            "format": "int32"
+          }
+        }
+      },
+      "Product": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "price": {
+            "type": "number",
+            "format": "double"
+          },
+          "sector": {
+            "type": "string"
+          },
+          "quantity": {
+            "type": "number",
+            "format": "int32"
+          },
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "total_income": {
+            "type": "number",
+            "format": "double"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      }
+    }
+  }
+}
+

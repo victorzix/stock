@@ -1,8 +1,8 @@
-import { ICreateProduct, Product } from '../../src/@types/product/index';
+import { ICreateProduct } from '../../src/@types/product/index';
 import { ProductRepository } from '../../src/repositories/ProductRepository';
 import { ProductServices } from '../../src/services/ProductServices';
 import { jest } from '@jest/globals';
-import { generateId } from '../../src/utils/random-bytes';
+import { generateId } from '../../src/utils/generate-id';
 
 jest.mock('sequelize');
 
