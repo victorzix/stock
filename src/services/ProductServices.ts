@@ -5,7 +5,7 @@ import {
 	IProductCreation,
 	ICreateProduct,
 } from '../@types/product/index';
-import { generateId } from '../utils/random-bytes';
+import { generateId } from '../utils/generate-id';
 import {
 	IValidUpdate,
 	createProductSchema,
