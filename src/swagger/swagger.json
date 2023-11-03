@@ -1,5 +1,5 @@
 {
-  "openapi": "3.1.0",
+  "openapi": "3.0.0",
   "info": {
     "title": "Stock API",
     "description": "An API created to manage a stock",
@@ -14,10 +14,9 @@
     }
   ],
   "paths": {
-    "/products": {
+    "/products/": {
       "post": {
         "summary": "Product register",
-        "description": "Route for adding a new product",
         "tags": ["Products"],
         "requestBody": {
           "content": {
@@ -57,9 +56,93 @@
                   }
                 }
               }
+            },
+            "400": {
+              "description": "Bad request errors",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "oneOf": [
+                      {
+                        "type": "object",
+                        "properties": {
+                          "status": {
+                            "type": "string",
+                            "description": "fail"
+                          },
+                          "message": {
+                            "type": "string",
+                            "description": "Product already exists"
+                          }
+                        }
+                      },
+
+                      {
+                        "type": "object",
+                        "properties": {
+                          "status": {
+                            "type": "string",
+                            "description": "fail"
+                          },
+                          "message": {
+                            "type": "string",
+                            "description": "Validation error: ${type of validation error}"
+                          }
+                        }
+                      }
+                    ]
+                        
+
+                  },
+                  "example": {
+                      "ExistentProduct": 
+                      { 
+                        "status": "fail",
+                        "message": "Product already exists"
+                      },
+                      "ValidationError": 
+                      {
+                        "status": "fail",
+                        "message": "Validation error: ${type of validation error}"
+                      }
+                  }
+                }
+              }
             }
           }
         }
+      },
+      "/products/product/${id}": {
+        "get": {
+          "summary": "Get a product from it's id",
+          "tags": ["Products"],
+          "parameters": [
+            {
+              "in": "path",
+              "name": "id",
+              "type": "string",
+              "description": "Product id",
+              "required": true
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "OK",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "$ref": "#/components/schemas/Product"
+                  }
+                }
+              }
+            },
+            "404": {
+              
+              "example": "Product not found"
+            }
+          }
+        }        
       }
     },
   "components": {
