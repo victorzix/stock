@@ -10,7 +10,10 @@ export async function errorHandler(
 ) {
   console.log(error)
   if (error instanceof AppError) {
-    return res.status(error.statusCode).json(error.message)
+    return res.status(error.statusCode).json({
+      status: 'fail',
+      message: error.message
+    })
   }
 
   res

@@ -1,16 +1,8 @@
-import { IProduct, IProductQuery, ProductInstance } from '../@types/IProduct';
-import { Product } from '../models/Product';
+import { ICreateProduct, IProductQuery, IUpdateProduct, Product } from '../@types/product/index';
 import { NextFunction, Request, Response } from 'express';
-import { Op, FindOptions } from 'sequelize';
-import {
-	IValidUpdate,
-	updateProductSchema,
-	validateData,
-} from '../utils/validators';
 import ProductServices from '../services/ProductServices';
 ('./store-product-service');
-import { NotFoundError } from '../errors/NotFoundError';
-import { BadRequestError } from '../errors/BadRequestError';
+
 
 class ProductController {
 	async store(
@@ -19,8 +11,8 @@ class ProductController {
 		next: NextFunction
 	): Promise<Response | void> {
 		try {
-			const data: IProduct = req.body;
-			const product: ProductInstance = await ProductServices.storeProduct(data);
+			const data: ICreateProduct = req.body;
+			const product: Product = await ProductServices.storeProduct(data);
 
 			return res.status(201).json({
 				message: 'Product successfully created',
@@ -50,7 +42,7 @@ class ProductController {
 		next: NextFunction
 	): Promise<Response | void> {
 		try {
-			const update = await ProductServices.updateProduct(
+			const update: IUpdateProduct = await ProductServices.updateProduct(
 				req.params.id,
 				req.body
 			);
@@ -72,7 +64,7 @@ class ProductController {
 			const query: IProductQuery = req.query;
 			const listOfProducts = await ProductServices.listProducts(query);
 
-			res.status(200).json(listOfProducts);
+			res.status(200).json({products: listOfProducts});
 		} catch (err: any) {
 			next(err);
 			return;
@@ -99,7 +91,10 @@ class ProductController {
 	): Promise<Response | void> {
 		try {
 			const income = await ProductServices.getSectorIncome(req.query);
-			return res.status(200).json(income);
+			return res.status(200).json({
+				sector: req.query.sector,
+				total_income: income
+			});
 		} catch (err: any) {
 			return next(err);
 		}
