@@ -115,7 +115,7 @@ export class ProductServices {
 		const products = await ProductRepository.list(query);
 
 		if (!query.sector) {
-			throw new InvalidFormatError('Please provide a sector');
+			throw new BadRequestError('Please provide a sector');
 		}
 
 		if (products.length < 1) {

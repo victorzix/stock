@@ -64,7 +64,7 @@ class ProductController {
 			const query: IProductQuery = req.query;
 			const listOfProducts = await ProductServices.listProducts(query);
 
-			res.status(200).json(listOfProducts);
+			res.status(200).json({products: listOfProducts});
 		} catch (err: any) {
 			next(err);
 			return;
@@ -91,7 +91,10 @@ class ProductController {
 	): Promise<Response | void> {
 		try {
 			const income = await ProductServices.getSectorIncome(req.query);
-			return res.status(200).json(income);
+			return res.status(200).json({
+				sector: req.query.sector,
+				total_income: income
+			});
 		} catch (err: any) {
 			return next(err);
 		}

@@ -57,13 +57,35 @@
                 }
               }
             },
-            "400": {
-              "description": "Bad request errors",
+            "403": {
+              "description": "Invalid format",
               "content": {
                 "application/json": {
                   "schema": {
-                    "oneOf": [
-                      {
+                    "type": "object",
+                    "properties": {
+                      "status": {
+                        "type": "string",
+                        "description": "fail"
+                      },
+                      "message": {
+                        "type": "string",
+                        "description": "Validation error: ${type of validation error}"
+                      }
+                    }
+                  },
+                  "example": {
+                    "status": "fail",
+                    "message":"Validation error: ${type of validation error}"
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "Bad request",
+              "content": {
+                "application/json": {
+                  "schema": {
                         "type": "object",
                         "properties": {
                           "status": {
@@ -75,9 +97,123 @@
                             "description": "Product already exists"
                           }
                         }
-                      },
+                  },
+                  "example": {
+                        "status": "fail",
+                        "message": "Product already exists"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
 
-                      {
+      "/products/update/{id}": {
+        "patch": {
+          "summary": "Update a product",
+          "tags": ["Products"],
+          "parameters": [
+            {
+              "in": "path",
+              "name": "id",
+              "type": "string",
+              "description": "Product id",
+              "required": true
+            }
+          ],
+          "requestBody": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UpdateProduct"
+                },
+                "examples": {
+                  "product": {
+                    "value": {
+                      "name": "Baron",
+                      "price": 133.1,
+                      "sector": "4",
+                      "quantity": 10
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "responses": {
+            "200": {
+              "description": "OK",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "message": {
+                        "type": "string",
+                        "description": "Successfully updated product"
+                      },
+                      "data": {
+                        "$ref": "#/components/schemas/Product"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "404": {
+              "description": "Not found error",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "status": {
+                        "type": "string",
+                        "description": "fail"
+                      },
+                      "message": {
+                        "type": "string",
+                        "description": "Product not found"
+                      }
+                    }
+                  },
+                  "example": {
+                    "status": "fail",
+                    "message": "Product not found"
+                  }
+                }
+              }
+            },
+            "403": {
+              "description": "Invalid format",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "status": {
+                        "type": "string",
+                        "description": "fail"
+                      },
+                      "message": {
+                        "type": "string",
+                        "description": "Validation error: ${type of validation error}"
+                      }
+                    }
+                  },
+                  "example": {
+                    "status": "fail",
+                    "message": "Validation error: ${type of validation error}"
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "Bad request",
+              "content": {
+                "application/json": {
+                  "schema": {
                         "type": "object",
                         "properties": {
                           "status": {
@@ -86,25 +222,13 @@
                           },
                           "message": {
                             "type": "string",
-                            "description": "Validation error: ${type of validation error}"
+                            "description": "Product Name already registered"
                           }
                         }
-                      }
-                    ]
-                        
-
                   },
                   "example": {
-                      "ExistentProduct": 
-                      { 
                         "status": "fail",
-                        "message": "Product already exists"
-                      },
-                      "ValidationError": 
-                      {
-                        "status": "fail",
-                        "message": "Validation error: ${type of validation error}"
-                      }
+                        "message": "Product Name already registered"
                   }
                 }
               }
@@ -112,6 +236,7 @@
           }
         }
       },
+
       "/products/product/{id}": {
         "get": {
           "summary": "Get a product from it's id",
@@ -165,9 +290,126 @@
         }        
       },
 
-      "/products/{id}": {
-        "patch": {
-          "summary": "Update a product",
+      "/products/index": {
+        "get": {
+          "summary": "Get all products from the database",
+          "tags": ["Products"],
+          "responses": {
+            "200": {
+              "description": "OK",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "products": {
+                        "type": "array",
+                        "items": {
+                          "$ref": "#/components/schemas/Product"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+
+      "/products/income/": {
+        "get": {
+          "summary": "Get the income of an especific sector",
+          "tags": ["Products"],
+          "parameters": [
+            {
+              "in": "query",
+              "name": "sector",
+              "type": "string",
+              "description": "Sector id",
+              "required": true
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "OK",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "sector": {
+                        "type": "string",
+                        "description": "Sector id"
+                      },
+                      "total_income": {
+                        "type": "number",
+                        "description": "Total income"
+                      }
+                    }
+                  },
+                  "example": {
+                    "sector": "1",
+                    "total_income": 164
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "Bad request",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "status": {
+                        "type": "string",
+                        "description": "fail"
+                      },
+                      "message": {
+                        "type": "string",
+                        "description": "Please provide a sector"
+                      }
+                    }
+                  },
+                  "example": {
+                    "status": "fail",
+                    "message": "Please provide a sector"
+                  }
+                }
+              }
+            },
+            "404": {
+              "description": "Not found error",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "status": {
+                        "type": "string",
+                        "description": "fail"
+                      },
+                      "message": {
+                        "type": "string",
+                        "description": "This sector is not registered"
+                      }
+                    }
+                  },
+                  "example": {
+                    "status": "fail",
+                    "description": "This sector is not registered"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+
+      "/products/delete/{id}": {
+        "delete": {
+          "summary": "Delete a product",
           "tags": ["Products"],
           "parameters": [
             {
@@ -178,47 +420,33 @@
               "required": true
             }
           ],
-          "requestBody": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/UpdateProduct"
-                },
-                "examples": {
-                  "product": {
-                    "value": {
-                      "name": "Baron",
-                      "price": 133.1,
-                      "sector": "4",
-                      "quantity": 10
-                    }
-                  }
-                }
-              }
-            }
-          },
           "responses": {
-            "200": {
-              "description": "OK",
+            "204": {
+              "description": "No body returned for response"
+            },
+            "404": {
+              "description": "Not found error",
               "content": {
                 "application/json": {
                   "schema": {
                     "type": "object",
                     "properties": {
+                      "status": {
+                        "type": "string",
+                        "description": "fail"
+                      },
                       "message": {
                         "type": "string",
-                        "description": "Successfully updated product"
-                      },
-                      "data": {
-                        "$ref": "#/components/schemas/Product"
+                        "description": "Product not found"
                       }
                     }
+                  },
+                  "example": {
+                      "status": "fail",
+                      "message": "Product not found"
                   }
                 }
               }
-            },
-            "400": {
-              "description": "Bad request errors",
             }
           }
         }
