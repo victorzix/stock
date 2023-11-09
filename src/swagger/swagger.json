@@ -1,5 +1,5 @@
 {
-  "openapi": "3.0.0",
+  "openapi": "3.1.0",
   "info": {
     "title": "Stock API",
     "description": "An API created to manage a stock",
@@ -112,7 +112,7 @@
           }
         }
       },
-      "/products/product/${id}": {
+      "/products/product/{id}": {
         "get": {
           "summary": "Get a product from it's id",
           "tags": ["Products"],
@@ -138,16 +138,114 @@
               }
             },
             "404": {
-              
-              "example": "Product not found"
+              "description": "Not found error",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "status": {
+                        "type": "string",
+                        "description": "fail"
+                      },
+                      "message": {
+                        "type": "string",
+                        "description": "Product not found"
+                      }
+                    }
+                  },
+                  "example": {
+                      "status": "fail",
+                      "message": "Product not found"
+                  }
+                }
+              }
             }
           }
         }        
+      },
+
+      "/products/{id}": {
+        "patch": {
+          "summary": "Update a product",
+          "tags": ["Products"],
+          "parameters": [
+            {
+              "in": "path",
+              "name": "id",
+              "type": "string",
+              "description": "Product id",
+              "required": true
+            }
+          ],
+          "requestBody": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UpdateProduct"
+                },
+                "examples": {
+                  "product": {
+                    "value": {
+                      "name": "Baron",
+                      "price": 133.1,
+                      "sector": "4",
+                      "quantity": 10
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "responses": {
+            "200": {
+              "description": "OK",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "message": {
+                        "type": "string",
+                        "description": "Successfully updated product"
+                      },
+                      "data": {
+                        "$ref": "#/components/schemas/Product"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "Bad request errors",
+            }
+          }
+        }
       }
     },
   "components": {
     "schemas": {
       "CreateProduct": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "price": {
+            "type": "number",
+            "format": "double"
+          },
+          "sector": {
+            "type": "string"
+          },
+          "quantity": {
+            "type": "number",
+            "format": "int32"
+          }
+        }
+      },
+      "UpdateProduct": {
         "type": "object",
         "properties": {
           "name": {

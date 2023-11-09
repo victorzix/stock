@@ -2,7 +2,6 @@ import {
 	Product,
 	IProductQuery,
 	IUpdateProduct,
-	IProductCreation,
 	ICreateProduct,
 } from '../@types/product/index';
 import { generateId } from '../utils/generate-id';
@@ -15,6 +14,7 @@ import {
 import { BadRequestError } from '../errors/BadRequestError';
 import { NotFoundError } from '../errors/NotFoundError';
 import ProductRepository from '../repositories/ProductRepository';
+import { InvalidFormatError } from '../errors/InvalidFormatError';
 
 export class ProductServices {
 	async storeProduct(data: ICreateProduct): Promise<Product> {
@@ -34,7 +34,7 @@ export class ProductServices {
 		});
 
 		if (validation.error) {
-			throw new BadRequestError('Validation error: ' + validation.errors);
+			throw new InvalidFormatError('Validation error: ' + validation.errors);
 		}
 
 		const product = await ProductRepository.create({
@@ -73,7 +73,7 @@ export class ProductServices {
 		);
 
 		if (validation.error) {
-			throw new BadRequestError('Validation error: ' + validation.errors);
+			throw new InvalidFormatError('Validation error: ' + validation.errors);
 		}
 		if (validation.data.name) {
 			const alreadyExists = await ProductRepository.findOne({
@@ -115,7 +115,7 @@ export class ProductServices {
 		const products = await ProductRepository.list(query);
 
 		if (!query.sector) {
-			throw new BadRequestError('Please provide a sector');
+			throw new InvalidFormatError('Please provide a sector');
 		}
 
 		if (products.length < 1) {
