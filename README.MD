@@ -56,13 +56,7 @@ The following technologies were used to build this project:
 - [ExpressJs](https://expressjs.com/)
 - [Sequelize](https://sequelize.org/)
 - [Postgres](https://www.postgresql.org/)
-  
 
-  {
-	"statusCode": 404,
-	"message": "Cannot find this route"
-  }
-  ```
 ## Documentation
 All API endpoints can be found in the documentation below or in the **Swagger** documentation.
 
